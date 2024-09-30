@@ -15,6 +15,7 @@ describe('convertBytesToHuman', () => {
     expect(convertBytesToHuman('string')).toBe(false);
     expect(convertBytesToHuman([])).toBe(false);
     expect(convertBytesToHuman({})).toBe(false);
+    expect(convertBytesToHuman(NaN)).toBe(false);
   });
 
   test('Возвращает корректное значение для чисел', () => {

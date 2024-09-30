@@ -25,6 +25,10 @@ nonUniqueElements([10, 9, 10, 10, 9, 8]) == [10, 9, 10, 10, 9]
  */
 
 export default function nonUniqueElements(data) {
+  if (!Array.isArray(data) || !data.every(item => typeof item === 'number')) {
+    return false;
+  }
+
   const frequency = {};
 
   for (const num of data) {
