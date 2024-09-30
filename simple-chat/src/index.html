@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Send a message</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="index.css">
+</head>
+<body>
+<div class="sidebar">
+    <input type="text" id="nickname" placeholder="Введите ник" class="nickname-input">
+</div>
+<form class="form" action="/">
+    <ul class="message-list"></ul>
+    <div class="input-container">
+        <span class="material-icons attach-icon" title="Attach File">attach_file</span>
+        <input class="form-input" name="message-text" placeholder="Введите сообщение" type="text">
+        <button type="submit" class="send-button" title="Send">
+            <span class="material-icons send-icon">send</span>
+        </button>
+    </div>
+</form>
+<script src="index.js"></script>
+</body>
+</html>
