@@ -4,6 +4,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const form = document.querySelector('form');
     const input = document.querySelector('.form-input');
     const messageList = document.querySelector('.message-list');
+    const nicknameInput = document.getElementById('nickname');
 
     function loadMessages() {
         const messages = JSON.parse(localStorage.getItem('messages')) || [];
@@ -11,13 +12,14 @@ document.addEventListener('DOMContentLoaded', () => {
         messages.forEach((msg) => {
             addMessage(msg.text, msg.time, msg.nickname);
         });
+        updateMessageClasses();
         scrollToBottom();
     }
 
     function addMessage(text, time, nickname) {
         const li = document.createElement('li');
         li.classList.add('message');
-        const currentNickname = document.getElementById('nickname').value.trim();
+        const currentNickname = nicknameInput.value.trim();
 
         if (nickname === currentNickname) {
             li.classList.add('my');
@@ -28,15 +30,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const messageInfo = document.createElement('div');
         messageInfo.classList.add('message-info');
-        messageInfo.innerHTML = `${nickname} ${time} <span class="material-icons">check</span>`;
+        messageInfo.textContent = `${nickname} ${time} `;
+        const checkIcon = document.createElement('span');
+        checkIcon.classList.add('material-icons');
+        checkIcon.textContent = 'check';
+        messageInfo.appendChild(checkIcon);
 
         li.appendChild(messageText);
         li.appendChild(messageInfo);
 
         messageList.appendChild(li);
-        scrollToBottom();
     }
-
 
     function scrollToBottom() {
         messageList.scrollTop = messageList.scrollHeight;
@@ -45,7 +49,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function handleSubmit(event) {
         event.preventDefault();
         const text = input.value.trim();
-        const nickname = document.getElementById('nickname').value.trim() || 'Anonymous';
+        const nickname = nicknameInput.value.trim() || 'Anonymous';
         if (text !== '') {
             const now = new Date();
             const time = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
@@ -54,16 +58,32 @@ document.addEventListener('DOMContentLoaded', () => {
             messages.push(newMessage);
             localStorage.setItem('messages', JSON.stringify(messages));
             addMessage(text, time, nickname);
+            updateMessageClasses();
+            scrollToBottom();
             input.value = '';
         }
     }
 
-    form.addEventListener('submit', handleSubmit);
-    form.addEventListener('keypress', function (event) {
-        if (event.key === 'Enter') {
-            form.dispatchEvent(new Event('submit'));
-        }
+    function updateMessageClasses() {
+        const currentNickname = nicknameInput.value.trim();
+        const messages = JSON.parse(localStorage.getItem('messages')) || [];
+
+        const messageElements = messageList.querySelectorAll('.message');
+        messageElements.forEach((msgElement, index) => {
+            const message = messages[index];
+            if (message.nickname === currentNickname) {
+                msgElement.classList.add('my');
+            } else {
+                msgElement.classList.remove('my');
+            }
+        });
+    }
+
+    nicknameInput.addEventListener('input', () => {
+        updateMessageClasses();
     });
+
+    form.addEventListener('submit', handleSubmit);
 
     loadMessages();
 });
