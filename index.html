@@ -1,25 +1,64 @@
+<!-- index.html -->
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <title>Send a message</title>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <link rel="stylesheet" href="index.css">
-<script defer src="bundle.js"></script><link href="style.css" rel="stylesheet"></head>
+    <link rel="stylesheet" href="b88d04fba731603756b1.css"> <!-- Подключение стилей -->
+<script defer src="index.bundle.js"></script><link href="index.css" rel="stylesheet"></head>
 <body>
+<script>
+    // Функция для проверки наличия параметра chatId в URL
+    (function() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const chatId = urlParams.get('chatId');
+
+        if (!chatId) {
+            // Если chatId отсутствует, перенаправляем на chats.html
+            window.location.replace('chats.html');
+        }
+        // Иначе, остаёмся на текущей странице
+    })();
+</script>
+<!-- Боковая панель -->
 <div class="sidebar">
-    <input type="text" id="nickname" placeholder="Введите ник" class="nickname-input">
+    <fieldset class="toggle-container">
+        <legend>Выбор активного пользователя</legend>
+        <label class="toggle-label">
+            <input type="radio" name="message-filter" value="my" checked>
+            Мои сообщения
+        </label>
+        <label class="toggle-label">
+            <input type="radio" name="message-filter" value="others">
+            Сообщения собеседника
+        </label>
+    </fieldset>
 </div>
-<form class="form" action="/">
-    <ul class="message-list"></ul>
-    <div class="input-container">
-        <span class="material-icons attach-icon" title="Attach File">attach_file</span>
-        <input class="form-input" name="message-text" placeholder="Введите сообщение" type="text">
-        <button type="submit" class="send-button" title="Send">
-            <span class="material-icons send-icon">send</span>
+
+<!-- Основная форма -->
+<div class="form">
+    <!-- Шапка внутри формы -->
+    <header class="header">
+        <button class="header-button back-button" aria-label="Назад" onclick="window.location.href='chats.html'">
+            <span class="material-icons">arrow_back</span>
         </button>
-    </div>
-</form>
-<script src="index.js"></script>
+        <h1 class="header-title" id="chat-title">Чат</h1>
+    </header>
+
+    <!-- Форма сообщений -->
+    <form class="chat-form" action="/">
+        <ul class="message-list"></ul>
+        <div class="input-container">
+            <span class="material-icons attach-icon" title="Attach File">attach_file</span>
+            <input class="form-input" name="message-text" placeholder="Введите сообщение" type="text">
+            <button type="submit" class="send-button" title="Send">
+                <span class="material-icons send-icon">send</span>
+            </button>
+        </div>
+    </form>
+</div>
+
+<script src="aca303e57436aea14959.js"></script>
 </body>
 </html>
