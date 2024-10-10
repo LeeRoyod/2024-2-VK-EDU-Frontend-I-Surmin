@@ -1,8 +1,6 @@
 /*!**************************************************************!*\
   !*** css ../node_modules/css-loader/dist/cjs.js!./index.css ***!
   \**************************************************************/
-/* index.css */
-/* Общие настройки */
 html {
     box-sizing: border-box;
 }
@@ -20,27 +18,25 @@ body {
     font-size: 16px;
     font-family: 'Roboto', Helvetica, Arial, sans-serif;
     height: 100vh;
-    overflow: hidden; /* Убираем прокрутку для body */
+    overflow: hidden;
     position: relative;
 }
 
-/* Боковая панель (Sidebar) */
 .sidebar {
-    position: fixed; /* Фиксированное позиционирование */
+    position: fixed;
     top: 0;
     left: 0;
-    width: 250px; /* Ширина боковой панели */
-    height: 100vh; /* Полная высота окна */
+    width: 250px;
+    height: 100vh;
     background-color: #f5f5f5;
     display: flex;
     flex-direction: column;
     padding: 20px;
     box-shadow: 2px 0 5px rgba(0,0,0,0.1);
     box-sizing: border-box;
-    z-index: 1000; /* Обеспечивает отображение над другими элементами */
+    z-index: 1000;
 }
 
-/* Переключатель в боковой панели */
 .toggle-container {
     display: flex;
     flex-direction: column;
@@ -65,7 +61,6 @@ body {
     transition: color 0.3s;
 }
 
-/* Поле имени */
 .nickname-input {
     width: 100%;
     padding: 8px;
@@ -75,22 +70,20 @@ body {
     box-sizing: border-box;
 }
 
-/* Основная форма */
 .form {
-    margin-left: 270px; /* 250px ширина панели + 20px отступ */
+    margin-left: 270px;
     padding: 20px;
-    width: calc(100% - 270px); /* Полная ширина минус ширина панели и отступ */
-    height: 100vh; /* Полная высота окна */
+    width: calc(100% - 270px);
+    height: 100vh;
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
     background-color: #fff;
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    overflow: hidden; /* Предотвращает прокрутку всего контейнера */
+    overflow: hidden;
 }
 
-/* Шапка */
 .header {
     height: 60px;
     background-color: #ffffff;
@@ -102,7 +95,6 @@ body {
     margin-bottom: 20px;
 }
 
-/* Кнопки в шапке */
 .header-button {
     background: none;
     border: none;
@@ -123,7 +115,6 @@ body {
     transition: color 0.3s;
 }
 
-/* Кнопка Назад в шапке */
 .back-button {
     background: none;
     border: none;
@@ -132,7 +123,7 @@ body {
     align-items: center;
     justify-content: center;
     padding: 8px;
-    margin-right: 10px; /* Отступ справа от кнопки */
+    margin-right: 10px;
 }
 
 .back-button .material-icons {
@@ -145,7 +136,6 @@ body {
     transition: color 0.3s;
 }
 
-/* Заголовок шапки */
 .header-title {
     font-size: 20px;
     color: #333;
@@ -154,25 +144,22 @@ body {
     text-align: center;
 }
 
-/* Форма чата */
 .chat-form {
     display: flex;
     flex-direction: column;
-    flex-grow: 1; /* Занимает все доступное пространство */
-    overflow: hidden; /* Предотвращает прокрутку формы */
+    flex-grow: 1;
+    overflow: hidden;
 }
 
-/* Список сообщений */
 .message-list {
     margin-bottom: 10px;
     padding: 0;
     list-style-type: none;
     width: 100%;
-    flex-grow: 1; /* Занимает все доступное пространство */
-    overflow-y: auto; /* Добавляет прокрутку при переполнении */
+    flex-grow: 1;
+    overflow-y: auto;
 }
 
-/* Сообщения */
 .message {
     font-family: 'Roboto', sans-serif;
     color: #000;
@@ -195,7 +182,6 @@ body {
     align-self: flex-end;
 }
 
-/* Информация о сообщении */
 .message-info {
     font-size: 12px;
     color: #777;
@@ -212,12 +198,10 @@ body {
     vertical-align: middle;
 }
 
-/* Скрытие стандартного submit */
 input[type="submit"] {
     display: none;
 }
 
-/* Поле ввода сообщения */
 .form-input {
     border: 1px solid #ccc;
     border-radius: 20px;
@@ -233,14 +217,12 @@ input::placeholder {
     color: #999;
 }
 
-/* Контейнер для ввода сообщения */
 .input-container {
     position: relative;
     display: flex;
     align-items: center;
 }
 
-/* Иконка прикрепления файла */
 .attach-icon {
     position: absolute;
     left: 12px;
@@ -249,7 +231,6 @@ input::placeholder {
     font-size: 20px;
 }
 
-/* Кнопка отправки */
 .send-button {
     position: absolute;
     right: 12px;
@@ -267,20 +248,18 @@ input::placeholder {
     font-size: 24px;
 }
 
-/* Подвал чата (если используется) */
 .chat-footer {
     display: flex;
     justify-content: center;
     padding: 8px;
 }
 
-/* Адаптивность */
 @media (max-width: 600px) {
     .sidebar {
         width: 200px;
     }
     .form {
-        margin-left: 220px; /* 200px ширина панели + 20px отступ */
+        margin-left: 220px;
         width: calc(100% - 220px);
         padding: 15px;
     }
@@ -300,12 +279,6 @@ input::placeholder {
 /*!**************************************************************!*\
   !*** css ../node_modules/css-loader/dist/cjs.js!./chats.css ***!
   \**************************************************************/
-/* chats.css */
-
-/* Подключаем общие стили из index.css */
-
-/* Специфические стили для окна chats */
-
 .chat-list {
     list-style-type: none;
     padding: 0;
@@ -336,7 +309,7 @@ input::placeholder {
     flex-shrink: 0;
     background-size: cover;
     background-position: center;
-    background-image: url(f5c9bf8a40dd33824de1.png); /* Фоновая аватарка по умолчанию */
+    background-image: url(f5c9bf8a40dd33824de1.png);
 }
 
 .chat-info {
@@ -363,7 +336,7 @@ input::placeholder {
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
-    margin-right: 10px; /* Отступ между сообщением и информацией */
+    margin-right: 10px;
 }
 
 .chat-last-message-info {
@@ -380,17 +353,16 @@ input::placeholder {
 
 .message-check {
     font-size: 16px;
-    color: #4caf50; /* Зеленый цвет для галочки */
+    color: #4caf50;
 }
 
-/* Парящая кнопка создания нового чата */
 .floating-create-button {
     position: fixed;
     bottom: 30px;
     right: 30px;
     width: 60px;
     height: 60px;
-    background-color: #4caf50; /* Зеленый цвет */
+    background-color: #4caf50;
     color: white;
     border: none;
     border-radius: 50%;
@@ -400,7 +372,7 @@ input::placeholder {
     align-items: center;
     justify-content: center;
     transition: background-color 0.3s, transform 0.3s;
-    z-index: 1001; /* Поверх остальных элементов */
+    z-index: 1001;
 }
 
 .floating-create-button .material-icons {
@@ -408,7 +380,7 @@ input::placeholder {
 }
 
 .floating-create-button:hover {
-    background-color: #45a049; /* Темнее при наведении */
+    background-color: #45a049;
     transform: scale(1.05);
 }
 
@@ -416,12 +388,10 @@ input::placeholder {
     transform: scale(0.95);
 }
 
-/* Скрытие chat-footer, так как он больше не используется */
 .chat-footer {
     display: none;
 }
 
-/* Корректировка расположения шапки и боковой панели при ширине экрана меньше 600px */
 @media (max-width: 600px) {
     .header {
         left: 0;

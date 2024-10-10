@@ -1,19 +1,12 @@
-// src/index.js
 import './index.css';
 document.addEventListener('DOMContentLoaded', function () {
-  var form = document.querySelector('.chat-form'); // Убедитесь, что класс формы соответствует
+  var form = document.querySelector('.chat-form');
   var input = document.querySelector('.form-input');
   var messageList = document.querySelector('.message-list');
   var chatTitle = document.getElementById('chat-title');
-
-  // Получение chatId из URL
   var urlParams = new URLSearchParams(window.location.search);
   var chatId = urlParams.get('chatId');
-
-  // Определение переменной chats
   var chats = JSON.parse(localStorage.getItem('chats')) || [];
-
-  // Установка заголовка чата
   if (chatId) {
     var currentChat = chats.find(function (chat) {
       return chat.id === parseInt(chatId);
@@ -38,8 +31,6 @@ document.addEventListener('DOMContentLoaded', function () {
   function addMessage(text, time, nickname) {
     var li = document.createElement('li');
     li.classList.add('message');
-
-    // Добавляем класс 'my' только если сообщение от текущего пользователя
     if (nickname === 'Илья') {
       li.classList.add('my');
     }
@@ -65,10 +56,8 @@ document.addEventListener('DOMContentLoaded', function () {
     var nickname;
     var filterValue = document.querySelector('input[name="message-filter"]:checked').value;
     if (filterValue === 'my') {
-      // Если выбрано "Мои сообщения", отображаем "Вы"
       nickname = 'Илья';
     } else {
-      // Если выбрано "Сообщения собеседника", отображаем имя чата (собеседника)
       nickname = chatTitle.textContent;
     }
     if (text !== '') {
@@ -91,27 +80,16 @@ document.addEventListener('DOMContentLoaded', function () {
       input.value = '';
     }
   }
-
-  // Выбираем все радиокнопки с именем "message-filter"
   var filterRadios = document.querySelectorAll('input[name="message-filter"]');
-
-  // Добавляем обработчик события "change" ко всем радиокнопкам
   filterRadios.forEach(function (radio) {
     radio.addEventListener('change', function () {
-      updateMessageClasses(); // Обновляем визуальное отображение сообщений при изменении фильтра
+      updateMessageClasses();
     });
   });
   function updateMessageClasses() {
-    // Получаем текущее значение фильтра
     var filterValue = document.querySelector('input[name="message-filter"]:checked').value;
-
-    // Определяем имя пользователя. Можно сделать более гибким, если имя хранится динамически.
     var myNickname = 'Илья'; // Или получить из nicknameInput.value.trim()
-
-    // Получаем список сообщений из localStorage
     var messages = JSON.parse(localStorage.getItem("messages_".concat(chatId))) || [];
-
-    // Получаем все элементы сообщений в DOM
     var messageElements = messageList.querySelectorAll('.message');
     messageElements.forEach(function (msgElement, index) {
       var message = messages[index];
