@@ -1,13 +1,28 @@
 import './index.css';
 
 document.addEventListener('DOMContentLoaded', () => {
-    const form = document.querySelector('form');
+    const form = document.querySelector('.chat-form');
     const input = document.querySelector('.form-input');
     const messageList = document.querySelector('.message-list');
-    const nicknameInput = document.getElementById('nickname');
+    const chatTitle = document.getElementById('chat-title');
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const chatId = urlParams.get('chatId');
+    const chats = JSON.parse(localStorage.getItem('chats')) || [];
+
+    if (chatId) {
+        const currentChat = chats.find(chat => chat.id === parseInt(chatId));
+        if (currentChat) {
+            chatTitle.textContent = currentChat.name;
+        } else {
+            chatTitle.textContent = 'Чат';
+        }
+    } else {
+        chatTitle.textContent = 'Чат';
+    }
 
     function loadMessages() {
-        const messages = JSON.parse(localStorage.getItem('messages')) || [];
+        const messages = JSON.parse(localStorage.getItem(`messages_${chatId}`)) || [];
         messageList.innerHTML = '';
         messages.forEach((msg) => {
             addMessage(msg.text, msg.time, msg.nickname);
@@ -19,9 +34,8 @@ document.addEventListener('DOMContentLoaded', () => {
     function addMessage(text, time, nickname) {
         const li = document.createElement('li');
         li.classList.add('message');
-        const currentNickname = nicknameInput.value.trim();
 
-        if (nickname === currentNickname) {
+        if (nickname === 'Илья') {
             li.classList.add('my');
         }
 
@@ -49,14 +63,20 @@ document.addEventListener('DOMContentLoaded', () => {
     function handleSubmit(event) {
         event.preventDefault();
         const text = input.value.trim();
-        const nickname = nicknameInput.value.trim() || 'Anonymous';
+        let nickname;
+        const filterValue = document.querySelector('input[name="message-filter"]:checked').value;
+        if (filterValue === 'my') {
+            nickname = 'Илья';
+        } else {
+            nickname = chatTitle.textContent;
+        }
         if (text !== '') {
             const now = new Date();
             const time = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
             const newMessage = { text: text, time: time, nickname: nickname };
-            const messages = JSON.parse(localStorage.getItem('messages')) || [];
+            const messages = JSON.parse(localStorage.getItem(`messages_${chatId}`)) || [];
             messages.push(newMessage);
-            localStorage.setItem('messages', JSON.stringify(messages));
+            localStorage.setItem(`messages_${chatId}`, JSON.stringify(messages));
             addMessage(text, time, nickname);
             updateMessageClasses();
             scrollToBottom();
@@ -64,24 +84,37 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    function updateMessageClasses() {
-        const currentNickname = nicknameInput.value.trim();
-        const messages = JSON.parse(localStorage.getItem('messages')) || [];
+    const filterRadios = document.querySelectorAll('input[name="message-filter"]');
 
+    filterRadios.forEach(radio => {
+        radio.addEventListener('change', () => {
+            updateMessageClasses();
+        });
+    });
+
+    function updateMessageClasses() {
+        const filterValue = document.querySelector('input[name="message-filter"]:checked').value;
+        const myNickname = 'Илья'; // Или получить из nicknameInput.value.trim()
+        const messages = JSON.parse(localStorage.getItem(`messages_${chatId}`)) || [];
         const messageElements = messageList.querySelectorAll('.message');
+
         messageElements.forEach((msgElement, index) => {
             const message = messages[index];
-            if (message.nickname === currentNickname) {
-                msgElement.classList.add('my');
+            if (filterValue === 'my') {
+                if (message.nickname === myNickname) {
+                    msgElement.classList.add('my');
+                } else {
+                    msgElement.classList.remove('my');
+                }
             } else {
-                msgElement.classList.remove('my');
+                if (message.nickname === myNickname) {
+                    msgElement.classList.remove('my');
+                } else if (message.nickname !== 'Система') {
+                    msgElement.classList.add('my');
+                }
             }
         });
     }
-
-    nicknameInput.addEventListener('input', () => {
-        updateMessageClasses();
-    });
 
     form.addEventListener('submit', handleSubmit);
 
