@@ -1,0 +1,126 @@
+@import './index.css';
+
+.chat-list {
+    list-style-type: none;
+    padding: 0;
+    margin: 20px 0 0 0;
+    flex-grow: 1;
+    overflow-y: auto;
+}
+
+.chat-item {
+    display: flex;
+    align-items: center;
+    padding: 12px;
+    border-bottom: 1px solid #e0e0e0;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.chat-item:hover {
+    background-color: #f0f0f0;
+}
+
+.chat-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: #ccc;
+    margin-right: 12px;
+    flex-shrink: 0;
+    background-size: cover;
+    background-position: center;
+    background-image: url('./assets/avatars/avatarDefault.png');
+}
+
+.chat-info {
+    flex-grow: 1;
+}
+
+.chat-name {
+    font-size: 16px;
+    font-weight: bold;
+    color: #333;
+}
+
+.chat-last-message-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 4px;
+}
+
+.chat-last-message {
+    font-size: 14px;
+    color: #777;
+    flex-grow: 1;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    margin-right: 10px;
+}
+
+.chat-last-message-info {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+.message-time {
+    font-size: 12px;
+    color: #999;
+    margin-right: 5px;
+}
+
+.message-check {
+    font-size: 16px;
+    color: #4caf50;
+}
+
+.floating-create-button {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    width: 60px;
+    height: 60px;
+    background-color: #4caf50;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.3s, transform 0.3s;
+    z-index: 1001;
+}
+
+.floating-create-button .material-icons {
+    font-size: 30px;
+}
+
+.floating-create-button:hover {
+    background-color: #45a049;
+    transform: scale(1.05);
+}
+
+.floating-create-button:active {
+    transform: scale(0.95);
+}
+
+.chat-footer {
+    display: none;
+}
+
+@media (max-width: 600px) {
+    .header {
+        left: 0;
+    }
+    .sidebar {
+        width: 200px;
+    }
+    body {
+        padding-left: 200px;
+    }
+}
