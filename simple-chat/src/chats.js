@@ -112,7 +112,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     burgerButton.addEventListener('click', () => {
-        alert('Бургер-кнопка нажата');
+        alert('Бургер-кнопка нажата (тест)');
     });
 
     searchButton.addEventListener('click', () => {
