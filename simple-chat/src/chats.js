@@ -4,17 +4,16 @@ const importAll = (r) => r.keys().map(r);
 const avatars = importAll(require.context('./assets/avatars', false, /\.(png|jpe?g|svg)$/));
 
 const avatarDefault = avatars.find(src => src.includes('avatarDefault'));
-
 const filteredAvatars = avatars.filter(src => src !== avatarDefault);
 
 document.addEventListener('DOMContentLoaded', () => {
     const chatList = document.querySelector('.chat-list');
     const createChatButton = document.querySelector('.floating-create-button');
     const burgerButton = document.querySelector('.burger-button');
-    const searchButton = document.querySelector('.search-button');
-    const headerTitle = document.querySelector('.header-title');
+    const searchInput = document.querySelector('.search-input');
 
     const chats = JSON.parse(localStorage.getItem('chats')) || [];
+    const userNickname = 'Илья';
 
     function getAvatarForChat(index) {
         return filteredAvatars[index] || avatarDefault;
@@ -31,6 +30,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const lastMessageObj = messages.length > 0 ? messages[messages.length - 1] : null;
             const lastMessage = lastMessageObj ? lastMessageObj.text : 'Нет сообщений';
             const lastMessageTime = lastMessageObj ? lastMessageObj.time : '';
+            const lastMessageFromUser = lastMessageObj ? (lastMessageObj.nickname === userNickname) : false;
 
             const li = document.createElement('li');
             li.classList.add('chat-item');
@@ -63,12 +63,14 @@ document.addEventListener('DOMContentLoaded', () => {
             timeSpan.classList.add('message-time');
             timeSpan.textContent = lastMessageTime;
 
-            const checkIcon = document.createElement('span');
-            checkIcon.classList.add('material-icons', 'message-check');
-            checkIcon.textContent = 'check';
-
             lastMsgInfo.appendChild(timeSpan);
-            lastMsgInfo.appendChild(checkIcon);
+
+            if (lastMessageFromUser) {
+                const checkIcon = document.createElement('span');
+                checkIcon.classList.add('material-icons', 'message-check');
+                checkIcon.textContent = 'check';
+                lastMsgInfo.appendChild(checkIcon);
+            }
 
             lastMsgContainer.appendChild(lastMsg);
             lastMsgContainer.appendChild(lastMsgInfo);
@@ -102,23 +104,22 @@ document.addEventListener('DOMContentLoaded', () => {
             const initialMessage = {
                 text: 'Чат создан',
                 time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-                nickname: 'Система'
+                nickname: 'Система',
+                read: true
             };
             const messages = [initialMessage];
             localStorage.setItem(`messages_${newChat.id}`, JSON.stringify(messages));
 
-            renderChats();
+            renderChats(searchInput.value);
         }
     });
 
     burgerButton.addEventListener('click', () => {
-        alert('Бургер-кнопка нажата (тест)');
+        alert('Бургер-кнопка нажата');
     });
 
-    searchButton.addEventListener('click', () => {
-        const searchTerm = prompt('Поиск:');
-        if (searchTerm !== null) {
-            renderChats(searchTerm);
-        }
+    searchInput.addEventListener('input', () => {
+        const searchTerm = searchInput.value;
+        renderChats(searchTerm);
     });
 });
