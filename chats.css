@@ -392,15 +392,43 @@ input::placeholder {
     display: none;
 }
 
+.header {
+    height: 60px;
+    background-color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+    position: relative;
+}
+
+.search-input {
+    width: 200px;
+    max-width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #ccc;
+    border-radius: 20px;
+    font-size: 16px;
+    outline: none;
+    transition: width 0.3s ease;
+}
+
+.search-input:focus {
+    width: 250px;
+    border-color: #4caf50;
+}
+
 @media (max-width: 600px) {
     .header {
-        left: 0;
+        padding: 0 10px;
     }
-    .sidebar {
+    .search-input {
+        width: 150px;
+    }
+    .search-input:focus {
         width: 200px;
-    }
-    body {
-        padding-left: 200px;
     }
 }
 
