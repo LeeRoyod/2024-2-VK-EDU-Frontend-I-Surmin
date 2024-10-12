@@ -7,6 +7,7 @@ document.addEventListener('DOMContentLoaded', function () {
   var urlParams = new URLSearchParams(window.location.search);
   var chatId = urlParams.get('chatId');
   var chats = JSON.parse(localStorage.getItem('chats')) || [];
+  var userNickname = 'Илья';
   if (chatId) {
     var currentChat = chats.find(function (chat) {
       return chat.id === parseInt(chatId);
@@ -23,15 +24,15 @@ document.addEventListener('DOMContentLoaded', function () {
     var messages = JSON.parse(localStorage.getItem("messages_".concat(chatId))) || [];
     messageList.innerHTML = '';
     messages.forEach(function (msg) {
-      addMessage(msg.text, msg.time, msg.nickname);
+      addMessage(msg.text, msg.time, msg.nickname, msg.read);
     });
     updateMessageClasses();
     scrollToBottom();
   }
-  function addMessage(text, time, nickname) {
+  function addMessage(text, time, nickname, read) {
     var li = document.createElement('li');
     li.classList.add('message');
-    if (nickname === 'Илья') {
+    if (nickname === userNickname) {
       li.classList.add('my');
     }
     var messageText = document.createElement('span');
@@ -41,7 +42,12 @@ document.addEventListener('DOMContentLoaded', function () {
     messageInfo.textContent = "".concat(nickname, " ").concat(time, " ");
     var checkIcon = document.createElement('span');
     checkIcon.classList.add('material-icons');
-    checkIcon.textContent = 'check';
+    if (read) {
+      checkIcon.textContent = 'done_all';
+      checkIcon.classList.add('message-check');
+    } else {
+      checkIcon.textContent = 'done';
+    }
     messageInfo.appendChild(checkIcon);
     li.appendChild(messageText);
     li.appendChild(messageInfo);
@@ -56,7 +62,7 @@ document.addEventListener('DOMContentLoaded', function () {
     var nickname;
     var filterValue = document.querySelector('input[name="message-filter"]:checked').value;
     if (filterValue === 'my') {
-      nickname = 'Илья';
+      nickname = userNickname;
     } else {
       nickname = chatTitle.textContent;
     }
@@ -69,12 +75,13 @@ document.addEventListener('DOMContentLoaded', function () {
       var newMessage = {
         text: text,
         time: time,
-        nickname: nickname
+        nickname: nickname,
+        read: false
       };
       var messages = JSON.parse(localStorage.getItem("messages_".concat(chatId))) || [];
       messages.push(newMessage);
       localStorage.setItem("messages_".concat(chatId), JSON.stringify(messages));
-      addMessage(text, time, nickname);
+      addMessage(text, time, nickname, newMessage.read);
       updateMessageClasses();
       scrollToBottom();
       input.value = '';
@@ -83,30 +90,52 @@ document.addEventListener('DOMContentLoaded', function () {
   var filterRadios = document.querySelectorAll('input[name="message-filter"]');
   filterRadios.forEach(function (radio) {
     radio.addEventListener('change', function () {
+      markMessagesAsRead();
       updateMessageClasses();
     });
   });
   function updateMessageClasses() {
     var filterValue = document.querySelector('input[name="message-filter"]:checked').value;
-    var myNickname = 'Илья'; // Или получить из nicknameInput.value.trim()
     var messages = JSON.parse(localStorage.getItem("messages_".concat(chatId))) || [];
     var messageElements = messageList.querySelectorAll('.message');
     messageElements.forEach(function (msgElement, index) {
       var message = messages[index];
       if (filterValue === 'my') {
-        if (message.nickname === myNickname) {
+        if (message.nickname === userNickname) {
           msgElement.classList.add('my');
         } else {
           msgElement.classList.remove('my');
         }
       } else {
-        if (message.nickname === myNickname) {
+        if (message.nickname === userNickname) {
           msgElement.classList.remove('my');
         } else if (message.nickname !== 'Система') {
           msgElement.classList.add('my');
         }
       }
     });
+  }
+  function markMessagesAsRead() {
+    var messages = JSON.parse(localStorage.getItem("messages_".concat(chatId))) || [];
+    var filterValue = document.querySelector('input[name="message-filter"]:checked').value;
+    var updated = false;
+    messages.forEach(function (msg, index) {
+      if (filterValue === 'my' && msg.nickname !== userNickname && !msg.read) {
+        msg.read = true;
+        updated = true;
+      } else if (filterValue === 'others' && msg.nickname === userNickname && !msg.read) {
+        msg.read = true;
+        updated = true;
+      }
+    });
+    if (updated) {
+      localStorage.setItem("messages_".concat(chatId), JSON.stringify(messages));
+      messageList.innerHTML = '';
+      messages.forEach(function (msg) {
+        addMessage(msg.text, msg.time, msg.nickname, msg.read);
+      });
+      scrollToBottom();
+    }
   }
   form.addEventListener('submit', handleSubmit);
   loadMessages();
