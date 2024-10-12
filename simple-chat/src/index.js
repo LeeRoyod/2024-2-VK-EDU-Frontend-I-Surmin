@@ -9,6 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const urlParams = new URLSearchParams(window.location.search);
     const chatId = urlParams.get('chatId');
     const chats = JSON.parse(localStorage.getItem('chats')) || [];
+    const userNickname = 'Илья';
 
     if (chatId) {
         const currentChat = chats.find(chat => chat.id === parseInt(chatId));
@@ -25,17 +26,17 @@ document.addEventListener('DOMContentLoaded', () => {
         const messages = JSON.parse(localStorage.getItem(`messages_${chatId}`)) || [];
         messageList.innerHTML = '';
         messages.forEach((msg) => {
-            addMessage(msg.text, msg.time, msg.nickname);
+            addMessage(msg.text, msg.time, msg.nickname, msg.read);
         });
         updateMessageClasses();
         scrollToBottom();
     }
 
-    function addMessage(text, time, nickname) {
+    function addMessage(text, time, nickname, read) {
         const li = document.createElement('li');
         li.classList.add('message');
 
-        if (nickname === 'Илья') {
+        if (nickname === userNickname) {
             li.classList.add('my');
         }
 
@@ -47,12 +48,17 @@ document.addEventListener('DOMContentLoaded', () => {
         messageInfo.textContent = `${nickname} ${time} `;
         const checkIcon = document.createElement('span');
         checkIcon.classList.add('material-icons');
-        checkIcon.textContent = 'check';
-        messageInfo.appendChild(checkIcon);
 
+        if (read) {
+            checkIcon.textContent = 'done_all';
+            checkIcon.classList.add('message-check');
+        } else {
+            checkIcon.textContent = 'done';
+        }
+
+        messageInfo.appendChild(checkIcon);
         li.appendChild(messageText);
         li.appendChild(messageInfo);
-
         messageList.appendChild(li);
     }
 
@@ -66,18 +72,18 @@ document.addEventListener('DOMContentLoaded', () => {
         let nickname;
         const filterValue = document.querySelector('input[name="message-filter"]:checked').value;
         if (filterValue === 'my') {
-            nickname = 'Илья';
+            nickname = userNickname;
         } else {
             nickname = chatTitle.textContent;
         }
         if (text !== '') {
             const now = new Date();
             const time = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-            const newMessage = { text: text, time: time, nickname: nickname };
+            const newMessage = { text: text, time: time, nickname: nickname, read: false };
             const messages = JSON.parse(localStorage.getItem(`messages_${chatId}`)) || [];
             messages.push(newMessage);
             localStorage.setItem(`messages_${chatId}`, JSON.stringify(messages));
-            addMessage(text, time, nickname);
+            addMessage(text, time, nickname, newMessage.read);
             updateMessageClasses();
             scrollToBottom();
             input.value = '';
@@ -88,32 +94,56 @@ document.addEventListener('DOMContentLoaded', () => {
 
     filterRadios.forEach(radio => {
         radio.addEventListener('change', () => {
+            markMessagesAsRead();
             updateMessageClasses();
+
         });
     });
 
     function updateMessageClasses() {
         const filterValue = document.querySelector('input[name="message-filter"]:checked').value;
-        const myNickname = 'Илья'; // Или получить из nicknameInput.value.trim()
         const messages = JSON.parse(localStorage.getItem(`messages_${chatId}`)) || [];
         const messageElements = messageList.querySelectorAll('.message');
 
         messageElements.forEach((msgElement, index) => {
             const message = messages[index];
             if (filterValue === 'my') {
-                if (message.nickname === myNickname) {
+                if (message.nickname === userNickname) {
                     msgElement.classList.add('my');
                 } else {
                     msgElement.classList.remove('my');
                 }
             } else {
-                if (message.nickname === myNickname) {
+                if (message.nickname === userNickname) {
                     msgElement.classList.remove('my');
                 } else if (message.nickname !== 'Система') {
                     msgElement.classList.add('my');
                 }
             }
         });
+    }
+
+    function markMessagesAsRead() {
+        const messages = JSON.parse(localStorage.getItem(`messages_${chatId}`)) || [];
+        const filterValue = document.querySelector('input[name="message-filter"]:checked').value;
+        let updated = false;
+        messages.forEach((msg, index) => {
+            if (filterValue === 'my' && msg.nickname !== userNickname && !msg.read) {
+                msg.read = true;
+                updated = true;
+            } else if (filterValue === 'others' && msg.nickname === userNickname && !msg.read) {
+                msg.read = true;
+                updated = true;
+            }
+        });
+        if (updated) {
+            localStorage.setItem(`messages_${chatId}`, JSON.stringify(messages));
+            messageList.innerHTML = '';
+            messages.forEach(msg => {
+                addMessage(msg.text, msg.time, msg.nickname, msg.read);
+            });
+            scrollToBottom();
+        }
     }
 
     form.addEventListener('submit', handleSubmit);

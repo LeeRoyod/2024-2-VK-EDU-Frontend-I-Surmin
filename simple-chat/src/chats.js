@@ -31,6 +31,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const lastMessage = lastMessageObj ? lastMessageObj.text : 'Нет сообщений';
             const lastMessageTime = lastMessageObj ? lastMessageObj.time : '';
             const lastMessageFromUser = lastMessageObj ? (lastMessageObj.nickname === userNickname) : false;
+            const lastMessageRead = lastMessageObj ? lastMessageObj.read : false;
 
             const li = document.createElement('li');
             li.classList.add('chat-item');
@@ -68,7 +69,11 @@ document.addEventListener('DOMContentLoaded', () => {
             if (lastMessageFromUser) {
                 const checkIcon = document.createElement('span');
                 checkIcon.classList.add('material-icons', 'message-check');
-                checkIcon.textContent = 'check';
+                if (lastMessageRead) {
+                    checkIcon.textContent = 'done_all';
+                } else {
+                    checkIcon.textContent = 'done';
+                }
                 lastMsgInfo.appendChild(checkIcon);
             }
 
