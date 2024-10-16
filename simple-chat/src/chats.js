@@ -116,6 +116,12 @@ document.addEventListener('DOMContentLoaded', () => {
             localStorage.setItem(`messages_${newChat.id}`, JSON.stringify(messages));
 
             renderChats(searchInput.value);
+
+            const newChatElement = chatList.querySelector(`.chat-item:last-child`);
+            newChatElement.classList.add('new-chat');
+            setTimeout(() => {
+                newChatElement.classList.remove('new-chat');
+            }, 1000);
         }
     });
 
