@@ -6,6 +6,7 @@
     margin: 20px 0 0 0;
     flex-grow: 1;
     overflow-y: auto;
+    overflow-x: hidden;
 }
 
 .chat-item {
@@ -14,11 +15,13 @@
     padding: 12px;
     border-bottom: 1px solid #e0e0e0;
     cursor: pointer;
-    transition: background-color 0.3s;
+    transition: background-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
 }
 
 .chat-item:hover {
     background-color: #f0f0f0;
+    transform: scale(1.008);
+    animation: pulse 1s;
 }
 
 .chat-avatar {
@@ -92,7 +95,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: background-color 0.3s, transform 0.3s;
+    transition: background-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
     z-index: 1001;
 }
 
@@ -102,11 +105,12 @@
 
 .floating-create-button:hover {
     background-color: #45a049;
-    transform: scale(1.05);
+    transform: scale(1.15);
 }
 
 .floating-create-button:active {
-    transform: scale(0.95);
+    transform: scale(0.9);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .chat-footer {
@@ -115,7 +119,7 @@
 
 .header {
     height: 60px;
-    background-color: #ffffff;
+    background-color: rgba(142, 36, 170, 0.5);
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -123,6 +127,21 @@
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     margin-bottom: 20px;
     position: relative;
+    border-radius: 15px;
+}
+
+.header-button.burger-button {
+     transition: color 0.3s ease, transform 0.3s ease;
+ }
+
+.header-button.burger-button:hover {
+    color: #000;
+    transform: scale(1.008);
+    animation: pulse 1s;
+}
+
+.header-button.burger-button:active {
+    transform: scale(0.9);
 }
 
 .search-input {
@@ -141,6 +160,19 @@
     border-color: #4caf50;
 }
 
+.chat-item.new-chat {
+    animation: highlightNewChat 1s ease;
+}
+
+@keyframes highlightNewChat {
+    from {
+        background-color: #fffae6;
+    }
+    to {
+        background-color: var(--background-color);
+    }
+}
+
 @media (max-width: 600px) {
     .header {
         padding: 0 10px;
@@ -150,5 +182,17 @@
     }
     .search-input:focus {
         width: 200px;
+    }
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.013);
+    }
+    100% {
+        transform: scale(1.008);
     }
 }
