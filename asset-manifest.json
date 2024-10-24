@@ -1,0 +1,20 @@
+{
+  "files": {
+    "main.css": "/2024-2-VK-EDU-Frontend-I-Surmin/static/css/main.b6415ea1.css",
+    "main.js": "/2024-2-VK-EDU-Frontend-I-Surmin/static/js/main.aa5b3b2b.js",
+    "static/media/avatar2.png": "/2024-2-VK-EDU-Frontend-I-Surmin/static/media/avatar2.cce270bbb225a2043e48.png",
+    "static/media/avatar7.png": "/2024-2-VK-EDU-Frontend-I-Surmin/static/media/avatar7.a91be7c58ed9e66fed0b.png",
+    "static/media/avatar3.png": "/2024-2-VK-EDU-Frontend-I-Surmin/static/media/avatar3.7d81fac6b5a9806dce7e.png",
+    "static/media/avatar4.png": "/2024-2-VK-EDU-Frontend-I-Surmin/static/media/avatar4.47eaeda66031fd297708.png",
+    "static/media/avatar6.png": "/2024-2-VK-EDU-Frontend-I-Surmin/static/media/avatar6.8eec523f08bc1bc2093e.png",
+    "static/media/avatar1.png": "/2024-2-VK-EDU-Frontend-I-Surmin/static/media/avatar1.e1b287976a0447479cd9.png",
+    "static/media/avatar5.png": "/2024-2-VK-EDU-Frontend-I-Surmin/static/media/avatar5.d27e67326f4f4551e7f6.png",
+    "index.html": "/2024-2-VK-EDU-Frontend-I-Surmin/index.html",
+    "main.b6415ea1.css.map": "/2024-2-VK-EDU-Frontend-I-Surmin/static/css/main.b6415ea1.css.map",
+    "main.aa5b3b2b.js.map": "/2024-2-VK-EDU-Frontend-I-Surmin/static/js/main.aa5b3b2b.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.b6415ea1.css",
+    "static/js/main.aa5b3b2b.js"
+  ]
+}
