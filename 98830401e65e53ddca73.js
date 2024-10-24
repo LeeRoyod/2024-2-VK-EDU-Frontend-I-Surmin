@@ -24,33 +24,16 @@ document.addEventListener('DOMContentLoaded', function () {
     var messages = JSON.parse(localStorage.getItem("messages_".concat(chatId))) || [];
     messageList.innerHTML = '';
     messages.forEach(function (msg) {
-      addMessage(msg.text, msg.time, msg.nickname, msg.read, false);
+      addMessage(msg.text, msg.time, msg.nickname, msg.read);
     });
     updateMessageClasses();
     scrollToBottom();
   }
   function addMessage(text, time, nickname, read) {
-    var animate = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : false;
     var li = document.createElement('li');
     li.classList.add('message');
     if (nickname === userNickname) {
       li.classList.add('my');
-    }
-    if (nickname === 'Система') {
-      li.classList.add('system');
-    }
-    if (animate) {
-      if (nickname === 'Система') {
-        li.classList.add('new-system-message');
-        li.addEventListener('animationend', function () {
-          li.classList.remove('new-system-message');
-        });
-      } else {
-        li.classList.add('new-message');
-        li.addEventListener('animationend', function () {
-          li.classList.remove('new-message');
-        });
-      }
     }
     var messageText = document.createElement('span');
     messageText.textContent = text;
@@ -59,12 +42,6 @@ document.addEventListener('DOMContentLoaded', function () {
     messageInfo.textContent = "".concat(nickname, " ").concat(time, " ");
     var checkIcon = document.createElement('span');
     checkIcon.classList.add('material-icons');
-    if (nickname === 'Система') {
-      var infoIcon = document.createElement('span');
-      infoIcon.classList.add('material-icons', 'system-icon');
-      infoIcon.textContent = 'info';
-      messageInfo.prepend(infoIcon);
-    }
     if (read) {
       checkIcon.textContent = 'done_all';
       checkIcon.classList.add('message-check');
@@ -77,10 +54,7 @@ document.addEventListener('DOMContentLoaded', function () {
     messageList.appendChild(li);
   }
   function scrollToBottom() {
-    messageList.scrollTo({
-      top: messageList.scrollHeight,
-      behavior: 'smooth'
-    });
+    messageList.scrollTop = messageList.scrollHeight;
   }
   function handleSubmit(event) {
     event.preventDefault();
@@ -107,7 +81,7 @@ document.addEventListener('DOMContentLoaded', function () {
       var messages = JSON.parse(localStorage.getItem("messages_".concat(chatId))) || [];
       messages.push(newMessage);
       localStorage.setItem("messages_".concat(chatId), JSON.stringify(messages));
-      addMessage(text, time, nickname, newMessage.read, true);
+      addMessage(text, time, nickname, newMessage.read);
       updateMessageClasses();
       scrollToBottom();
       input.value = '';
@@ -126,30 +100,17 @@ document.addEventListener('DOMContentLoaded', function () {
     var messageElements = messageList.querySelectorAll('.message');
     messageElements.forEach(function (msgElement, index) {
       var message = messages[index];
-      var checkIcon = msgElement.querySelector('.message-check');
       if (filterValue === 'my') {
         if (message.nickname === userNickname) {
           msgElement.classList.add('my');
-          if (checkIcon) {
-            checkIcon.style.display = 'inline';
-          }
         } else {
           msgElement.classList.remove('my');
-          if (checkIcon) {
-            checkIcon.style.display = 'none';
-          }
         }
-      } else if (filterValue === 'others') {
+      } else {
         if (message.nickname === userNickname) {
           msgElement.classList.remove('my');
-          if (checkIcon) {
-            checkIcon.style.display = 'none';
-          }
         } else if (message.nickname !== 'Система') {
           msgElement.classList.add('my');
-          if (checkIcon) {
-            checkIcon.style.display = 'inline';
-          }
         }
       }
     });
@@ -171,19 +132,11 @@ document.addEventListener('DOMContentLoaded', function () {
       localStorage.setItem("messages_".concat(chatId), JSON.stringify(messages));
       messageList.innerHTML = '';
       messages.forEach(function (msg) {
-        addMessage(msg.text, msg.time, msg.nickname, msg.read, false);
+        addMessage(msg.text, msg.time, msg.nickname, msg.read);
       });
       scrollToBottom();
     }
   }
-  var typingTimeout;
-  input.addEventListener('input', function () {
-    clearTimeout(typingTimeout);
-    document.querySelector('.typing-indicator').style.display = 'flex';
-    typingTimeout = setTimeout(function () {
-      document.querySelector('.typing-indicator').style.display = 'none';
-    }, 2000);
-  });
   form.addEventListener('submit', handleSubmit);
   loadMessages();
 });
