@@ -1,0 +1,87 @@
+// react-chat/src/components/Chat/Chat.module.scss
+.chatContainer {
+  padding: 20px;
+  width: 100%;
+  height: 100vh;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--background-color);
+  overflow: hidden;
+}
+
+.header {
+  height: 60px;
+  min-height: 60px;
+  background-color: rgba(142, 36, 170, 0.50);
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  margin-bottom: 20px;
+  border-radius: 15px;
+  flex-shrink: 0;
+  box-sizing: border-box;
+}
+
+.backButton {
+  margin-right: 10px;
+  transition: color 0.3s ease, transform 0.3s ease;
+
+  &:hover {
+    color: #000;
+    transform: scale(1.2);
+    animation: pulse 1s;
+  }
+
+  &:active {
+    transform: scale(0.9);
+  }
+}
+
+.chatTitle {
+  font-size: 20px;
+  color: #333;
+  margin: 0;
+  flex-grow: 1;
+  text-align: center;
+}
+
+.filterGroup {
+  margin-bottom: 10px;
+}
+
+.chatForm {
+  display: flex;
+  flex-direction: column;
+  margin-top: auto;
+}
+
+.inputContainer {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.attachIcon {
+  position: absolute;
+  left: 12px;
+}
+
+.formInput {
+  flex-grow: 1;
+  padding-left: 40px !important;
+  padding-right: 40px !important;
+}
+
+.sendButton {
+  position: absolute;
+  right: 12px;
+}
+
+.typingIndicator {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  align-self: flex-end;
+  margin-right: 25px;
+}

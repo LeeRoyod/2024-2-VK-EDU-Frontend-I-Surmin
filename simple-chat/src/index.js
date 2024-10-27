@@ -26,18 +26,35 @@ document.addEventListener('DOMContentLoaded', () => {
         const messages = JSON.parse(localStorage.getItem(`messages_${chatId}`)) || [];
         messageList.innerHTML = '';
         messages.forEach((msg) => {
-            addMessage(msg.text, msg.time, msg.nickname, msg.read);
+            addMessage(msg.text, msg.time, msg.nickname, msg.read, false);
         });
         updateMessageClasses();
         scrollToBottom();
     }
 
-    function addMessage(text, time, nickname, read) {
+    function addMessage(text, time, nickname, read, animate = false) {
         const li = document.createElement('li');
         li.classList.add('message');
 
         if (nickname === userNickname) {
             li.classList.add('my');
+        }
+        if (nickname === 'Система') {
+            li.classList.add('system');
+        }
+
+        if (animate) {
+            if (nickname === 'Система') {
+                li.classList.add('new-system-message');
+                li.addEventListener('animationend', () => {
+                    li.classList.remove('new-system-message');
+                });
+            } else {
+                li.classList.add('new-message');
+                li.addEventListener('animationend', () => {
+                    li.classList.remove('new-message');
+                });
+            }
         }
 
         const messageText = document.createElement('span');
@@ -48,6 +65,13 @@ document.addEventListener('DOMContentLoaded', () => {
         messageInfo.textContent = `${nickname} ${time} `;
         const checkIcon = document.createElement('span');
         checkIcon.classList.add('material-icons');
+
+        if (nickname === 'Система') {
+            const infoIcon = document.createElement('span');
+            infoIcon.classList.add('material-icons', 'system-icon');
+            infoIcon.textContent = 'info';
+            messageInfo.prepend(infoIcon);
+        }
 
         if (read) {
             checkIcon.textContent = 'done_all';
@@ -63,7 +87,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function scrollToBottom() {
-        messageList.scrollTop = messageList.scrollHeight;
+        messageList.scrollTo({
+            top: messageList.scrollHeight,
+            behavior: 'smooth'
+        });
     }
 
     function handleSubmit(event) {
@@ -83,7 +110,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const messages = JSON.parse(localStorage.getItem(`messages_${chatId}`)) || [];
             messages.push(newMessage);
             localStorage.setItem(`messages_${chatId}`, JSON.stringify(messages));
-            addMessage(text, time, nickname, newMessage.read);
+            addMessage(text, time, nickname, newMessage.read, true);
             updateMessageClasses();
             scrollToBottom();
             input.value = '';
@@ -107,17 +134,30 @@ document.addEventListener('DOMContentLoaded', () => {
 
         messageElements.forEach((msgElement, index) => {
             const message = messages[index];
+            const checkIcon = msgElement.querySelector('.message-check');
             if (filterValue === 'my') {
                 if (message.nickname === userNickname) {
                     msgElement.classList.add('my');
+                    if (checkIcon) {
+                        checkIcon.style.display = 'inline';
+                    }
                 } else {
                     msgElement.classList.remove('my');
+                    if (checkIcon) {
+                        checkIcon.style.display = 'none';
+                    }
                 }
-            } else {
+            } else if (filterValue === 'others') {
                 if (message.nickname === userNickname) {
                     msgElement.classList.remove('my');
+                    if (checkIcon) {
+                        checkIcon.style.display = 'none';
+                    }
                 } else if (message.nickname !== 'Система') {
                     msgElement.classList.add('my');
+                    if (checkIcon) {
+                        checkIcon.style.display = 'inline';
+                    }
                 }
             }
         });
@@ -140,11 +180,21 @@ document.addEventListener('DOMContentLoaded', () => {
             localStorage.setItem(`messages_${chatId}`, JSON.stringify(messages));
             messageList.innerHTML = '';
             messages.forEach(msg => {
-                addMessage(msg.text, msg.time, msg.nickname, msg.read);
+                addMessage(msg.text, msg.time, msg.nickname, msg.read, false);
             });
             scrollToBottom();
         }
     }
+
+    let typingTimeout;
+    input.addEventListener('input', () => {
+        clearTimeout(typingTimeout);
+        document.querySelector('.typing-indicator').style.display = 'flex';
+
+        typingTimeout = setTimeout(() => {
+            document.querySelector('.typing-indicator').style.display = 'none';
+        }, 2000);
+    });
 
     form.addEventListener('submit', handleSubmit);
 
