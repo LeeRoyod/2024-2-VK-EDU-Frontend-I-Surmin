@@ -1,4 +1,3 @@
-// react-chat/src/components/TypingIndicator/TypingIndicator.jsx
 import React from 'react';
 import styles from './TypingIndicator.module.scss';
 

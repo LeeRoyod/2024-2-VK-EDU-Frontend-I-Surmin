@@ -1,4 +1,6 @@
-.chatContainer {
+@import '../../index.scss';
+
+.profileContainer {
   padding: 20px;
   width: 100%;
   height: 100vh;
@@ -37,7 +39,7 @@
   }
 }
 
-.chatTitle {
+.profileTitle {
   font-size: 20px;
   color: #333;
   margin: 0;
@@ -45,42 +47,40 @@
   text-align: center;
 }
 
-.filterGroup {
-  margin-bottom: 10px;
-}
-
-.chatForm {
+.form {
   display: flex;
   flex-direction: column;
-  margin-top: auto;
-}
-
-.inputContainer {
-  position: relative;
-  display: flex;
-  align-items: center;
-}
-
-.attachIcon {
-  position: absolute;
-  left: 12px;
-}
-
-.formInput {
   flex-grow: 1;
-  padding-left: 40px !important;
-  padding-right: 40px !important;
+  overflow-y: auto;
 }
 
-.sendButton {
-  position: absolute;
-  right: 12px;
+.saveButton {
+  margin-top: 20px;
+  align-self: center;
+
+  background-color: rgba(142, 36, 170, 0.50) !important;
+  color: #ffffff !important;
+
+  &:hover {
+    background-color: rgba(142, 36, 170, 0.70) !important;
+  }
+
+  &:active {
+    background-color: rgba(142, 36, 170, 0.90) !important;
+    transform: scale(0.95);
+  }
 }
 
-.typingIndicator {
-  display: flex;
-  align-items: center;
-  padding: 10px;
-  align-self: flex-end;
-  margin-right: 25px;
+@media (max-width: 600px) {
+  .header {
+    padding: 0 10px;
+  }
+
+  .profileTitle {
+    font-size: 18px;
+  }
+
+  .saveButton {
+    width: 100%;
+  }
 }

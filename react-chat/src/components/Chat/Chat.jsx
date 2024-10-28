@@ -1,4 +1,3 @@
-// react-chat/src/components/Chat/Chat.jsx
 import React, { useState, useEffect, useContext, useRef } from 'react';
 import styles from './Chat.module.scss';
 import MessageList from '../MessageList/MessageList';
@@ -6,12 +5,13 @@ import TypingIndicator from '../TypingIndicator/TypingIndicator';
 import { IconButton, TextField, RadioGroup, FormControlLabel, Radio } from '@mui/material';
 import { ArrowBack, AttachFile, Send } from '@mui/icons-material';
 import AppContext from '../../context/AppContext';
+import { useNavigate } from 'react-router-dom';
 
-function Chat({ chatId, goBack }) {
+function Chat({ chatId }) {
     const [messages, setMessages] = useState([]);
     const [inputText, setInputText] = useState('');
     const [filterValue, setFilterValue] = useState('my');
-    const { userNickname, chats } = useContext(AppContext);
+    const { profile, chats } = useContext(AppContext);
     const messageListRef = useRef(null);
 
     const [isTyping, setIsTyping] = useState(false);
@@ -21,6 +21,8 @@ function Chat({ chatId, goBack }) {
 
     const chat = chats.find(chat => chat.id === chatId);
     const chatTitle = chat ? chat.name : 'Чат';
+
+    const navigate = useNavigate();
 
     useEffect(() => {
         const storedMessages = JSON.parse(localStorage.getItem(`messages_${chatId}`)) || [];
@@ -52,10 +54,13 @@ function Chat({ chatId, goBack }) {
         e.preventDefault();
         const text = inputText.trim();
         let nickname;
+        let name;
         if (filterValue === 'my') {
-            nickname = userNickname;
+            nickname = profile.nickname;
+            name = profile.name;
         } else {
-            nickname = chatTitle;
+            nickname = "@"+chatTitle;
+            name = chatTitle;
         }
         if (text !== '') {
             const now = new Date();
@@ -65,6 +70,7 @@ function Chat({ chatId, goBack }) {
                 text: text,
                 time: time,
                 nickname: nickname,
+                name: name,
                 read: false
             };
             const updatedMessages = [...messages, newMessage];
@@ -84,9 +90,9 @@ function Chat({ chatId, goBack }) {
 
     const markMessagesAsRead = (filter) => {
         const updatedMessages = messages.map(msg => {
-            if (filter === 'my' && msg.nickname !== userNickname && !msg.read) {
+            if (filter === 'my' && msg.nickname !== profile.nickname && !msg.read) {
                 return { ...msg, read: true };
-            } else if (filter === 'others' && msg.nickname === userNickname && !msg.read) {
+            } else if (filter === 'others' && msg.nickname === profile.nickname && !msg.read) {
                 return { ...msg, read: true };
             }
             return msg;
@@ -95,10 +101,14 @@ function Chat({ chatId, goBack }) {
         localStorage.setItem(`messages_${chatId}`, JSON.stringify(updatedMessages));
     };
 
+    const handleGoBack = () => {
+        navigate('/');
+    };
+
     return (
         <div className={styles.chatContainer}>
             <header className={styles.header}>
-                <IconButton className={styles.backButton} onClick={goBack}>
+                <IconButton className={styles.backButton} onClick={handleGoBack}>
                     <ArrowBack />
                 </IconButton>
                 <h1 className={styles.chatTitle}>{chatTitle}</h1>

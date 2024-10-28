@@ -1,19 +1,18 @@
-// react-chat/src/components/MessageList/MessageList.jsx
 import React, { useContext } from 'react';
 import styles from './MessageList.module.scss';
 import MessageItem from '../MessageItem/MessageItem';
 import AppContext from '../../context/AppContext';
 
 function MessageList({ messages, filterValue, messageListRef, lastSentMessageId }) {
-    const { userNickname } = useContext(AppContext);
+    const { profile } = useContext(AppContext);
 
-    const filteredMessages = messages.map((message, index) => {
-        let isMyMessage = message.nickname === userNickname;
+    const filteredMessages = messages.map((message) => {
+        let isMyMessage = message.nickname === profile.nickname;
         let isNew = message.id === lastSentMessageId;
 
         if (filterValue === 'my') {
             if (isMyMessage) {
-                return <MessageItem key={message.id} message={message} isMyMessage={true} isNew={isNew}/>;
+                return <MessageItem key={message.id} message={message} isMyMessage={true} isNew={isNew} />;
             } else {
                 return <MessageItem key={message.id} message={message} isMyMessage={false} isNew={isNew} />;
             }
