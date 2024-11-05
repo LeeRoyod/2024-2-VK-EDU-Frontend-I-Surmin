@@ -1,11 +1,10 @@
-// react-chat/src/components/MessageItem/MessageItem.jsx
 import React from 'react';
 import styles from './MessageItem.module.scss';
 import { Typography } from '@mui/material';
 import { Done, DoneAll, Info } from '@mui/icons-material';
 
 function MessageItem({ message, isMyMessage, isNew }) {
-    const { text, time, nickname, read } = message;
+    const { text, time, nickname, name, read } = message;
 
     const messageClass = [styles.message];
     if (isMyMessage) {
@@ -26,7 +25,7 @@ function MessageItem({ message, isMyMessage, isNew }) {
             <div className={styles.messageInfo}>
                 {nickname === 'Система' && <Info className={styles.systemIcon} />}
                 <Typography component="span" className={styles.nicknameTime}>
-                    {`${nickname} ${time}`}
+                    {nickname === 'Система' ? nickname : name} {time}
                 </Typography>
                 {isMyMessage && nickname !== 'Система' && (
                     read ? <DoneAll className={styles.messageCheck} /> : <Done className={styles.messageCheck} />

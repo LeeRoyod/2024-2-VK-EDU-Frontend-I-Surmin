@@ -1,4 +1,3 @@
-// src/components/ChatItem/ChatItem.jsx
 import React, { useEffect, useState, useContext } from 'react';
 import styles from './ChatItem.module.scss';
 import AppContext from '../../context/AppContext';
@@ -7,7 +6,7 @@ import { Done, DoneAll } from '@mui/icons-material';
 
 function ChatItem({ chat, openChat }) {
     const [lastMessage, setLastMessage] = useState(null);
-    const { userNickname } = useContext(AppContext);
+    const { profile } = useContext(AppContext);
 
     useEffect(() => {
         const messages = JSON.parse(localStorage.getItem(`messages_${chat.id}`)) || [];
@@ -21,7 +20,7 @@ function ChatItem({ chat, openChat }) {
 
     const lastMessageText = lastMessage ? lastMessage.text : 'Нет сообщений';
     const lastMessageTime = lastMessage ? lastMessage.time : '';
-    const lastMessageFromUser = lastMessage ? lastMessage.nickname === userNickname : false;
+    const lastMessageFromUser = lastMessage ? lastMessage.nickname === profile.nickname : false;
     const lastMessageRead = lastMessage ? lastMessage.read : false;
 
     return (
