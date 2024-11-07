@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/2024-2-VK-EDU-Frontend-I-Surmin/static/css/main.da64633b.css",
+    "main.js": "/2024-2-VK-EDU-Frontend-I-Surmin/static/js/main.a667e606.js",
+    "index.html": "/2024-2-VK-EDU-Frontend-I-Surmin/index.html",
+    "main.da64633b.css.map": "/2024-2-VK-EDU-Frontend-I-Surmin/static/css/main.da64633b.css.map",
+    "main.a667e606.js.map": "/2024-2-VK-EDU-Frontend-I-Surmin/static/js/main.a667e606.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.da64633b.css",
+    "static/js/main.a667e606.js"
+  ]
+}
