@@ -3,32 +3,28 @@ import styles from './MessageList.module.scss';
 import MessageItem from '../MessageItem/MessageItem';
 import AppContext from '../../context/AppContext';
 
-function MessageList({ messages, filterValue, messageListRef, lastSentMessageId }) {
+function MessageList({ messages, messageListRef, lastSentMessageId, onDeleteMessage, onEditMessage }) {
     const { profile } = useContext(AppContext);
 
-    const filteredMessages = messages.map((message) => {
-        let isMyMessage = message.nickname === profile.nickname;
-        let isNew = message.id === lastSentMessageId;
+    const messageItems = messages.map((message) => {
+        const isMyMessage = message.sender.id === profile.id;
+        const isNew = message.id === lastSentMessageId;
 
-        if (filterValue === 'my') {
-            if (isMyMessage) {
-                return <MessageItem key={message.id} message={message} isMyMessage={true} isNew={isNew} />;
-            } else {
-                return <MessageItem key={message.id} message={message} isMyMessage={false} isNew={isNew} />;
-            }
-        } else if (filterValue === 'others') {
-            if (!isMyMessage && message.nickname !== 'Система') {
-                return <MessageItem key={message.id} message={message} isMyMessage={true} isNew={isNew} />;
-            } else {
-                return <MessageItem key={message.id} message={message} isMyMessage={false} isNew={isNew} />;
-            }
-        }
-        return null;
+        return (
+            <MessageItem
+                key={message.id}
+                message={message}
+                isMyMessage={isMyMessage}
+                isNew={isNew}
+                onDeleteMessage={onDeleteMessage}
+                onEditMessage={onEditMessage}
+            />
+        );
     });
 
     return (
         <ul className={styles.messageList} ref={messageListRef}>
-            {filteredMessages}
+            {messageItems}
         </ul>
     );
 }

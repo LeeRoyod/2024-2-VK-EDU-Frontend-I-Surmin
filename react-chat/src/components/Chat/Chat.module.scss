@@ -1,7 +1,7 @@
 .chatContainer {
   padding: 20px;
   width: 100%;
-  height: 100vh;
+  height: 100dvh;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
@@ -43,10 +43,6 @@
   margin: 0;
   flex-grow: 1;
   text-align: center;
-}
-
-.filterGroup {
-  margin-bottom: 10px;
 }
 
 .chatForm {

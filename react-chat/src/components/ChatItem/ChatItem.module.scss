@@ -66,3 +66,14 @@
   font-size: 16px;
   color: #4caf50;
 }
+
+.deleteButton {
+  padding: 4px;
+  color: rgba(244, 67, 54, 0.35) !important;
+  transition: color 0.3s ease;
+  margin-right: 5px;
+
+  &:hover {
+    color: rgba(244, 67, 54, 1) !important;
+  }
+}

@@ -1,14 +1,15 @@
 import React from 'react';
 
 const AppContext = React.createContext({
-    profile: {
-        name: 'Илья',
-        nickname: '@Илья',
-        about: '',
-    },
+    isAuthenticated: false,
+    accessToken: null,
+    refreshToken: null,
+    profile: null,
     setProfile: () => {},
     chats: [],
     setChats: () => {},
+    handleLogin: () => {},
+    handleLogout: () => {},
 });
 
 export default AppContext;
