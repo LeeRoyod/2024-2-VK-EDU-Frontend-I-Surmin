@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Routes, Route, Navigate, useParams, useNavigate } from 'react-router-dom';
 import ChatList from './components/ChatList/ChatList';
 import Chat from './components/Chat/Chat';
@@ -16,7 +16,18 @@ function App() {
     const navigate = useNavigate();
     const [isProfileLoaded, setIsProfileLoaded] = useState(false);
 
-    const fetchProfile = async (token) => {
+    const handleLogout = useCallback(() => {
+        localStorage.removeItem('accessToken');
+        localStorage.removeItem('refreshToken');
+        setAccessToken(null);
+        setRefreshToken(null);
+        setIsAuthenticated(false);
+        setProfile(null);
+        setIsProfileLoaded(false);
+        navigate('/login');
+    }, [navigate]);
+
+    const fetchProfile = useCallback(async (token) => {
         try {
             const response = await fetch('/api/user/current/', {
                 headers: {
@@ -34,9 +45,9 @@ function App() {
             console.error('Ошибка при получении профиля:', error);
             handleLogout();
         }
-    };
+    }, [handleLogout]);
 
-    const handleLogin = (access, refresh) => {
+    const handleLogin = useCallback((access, refresh) => {
         localStorage.setItem('accessToken', access);
         localStorage.setItem('refreshToken', refresh);
         setAccessToken(access);
@@ -44,18 +55,7 @@ function App() {
         setIsAuthenticated(true);
         fetchProfile(access);
         navigate('/');
-    };
-
-    const handleLogout = () => {
-        localStorage.removeItem('accessToken');
-        localStorage.removeItem('refreshToken');
-        setAccessToken(null);
-        setRefreshToken(null);
-        setIsAuthenticated(false);
-        setProfile(null);
-        setIsProfileLoaded(false);
-        navigate('/login');
-    };
+    }, [fetchProfile, navigate]);
 
     useEffect(() => {
         const storedAccessToken = localStorage.getItem('accessToken');
@@ -69,7 +69,7 @@ function App() {
         } else {
             setIsAuthenticated(false);
         }
-    }, []);
+    }, [fetchProfile]);
 
     if (isAuthenticated === null || (isAuthenticated && !isProfileLoaded)) {
         return <div>Загрузка...</div>;

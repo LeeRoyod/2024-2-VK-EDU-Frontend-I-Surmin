@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, useCallback } from 'react';
 import styles from './ChatList.module.scss';
 import ChatItem from '../ChatItem/ChatItem';
 import {
@@ -33,14 +33,7 @@ function ChatList() {
     const [selectedUserIds, setSelectedUserIds] = useState([]);
     const [userSearchTerm, setUserSearchTerm] = useState('');
 
-    useEffect(() => {
-        if (accessToken) {
-            fetchChats();
-            fetchUsers();
-        }
-    }, [accessToken]);
-
-    const fetchChats = async () => {
+    const fetchChats = useCallback(async () => {
         try {
             let allChats = [];
             let nextUrl = '/api/chats/?page_size=100';
@@ -69,9 +62,9 @@ function ChatList() {
         } catch (error) {
             console.error('Ошибка при получении чатов:', error);
         }
-    };
+    }, [accessToken, setChats]);
 
-    const fetchUsers = async () => {
+    const fetchUsers = useCallback(async () => {
         try {
             let allUsers = [];
             let nextUrl = '/api/users/?page_size=100';
@@ -101,7 +94,14 @@ function ChatList() {
         } catch (error) {
             console.error('Ошибка при получении списка пользователей:', error);
         }
-    };
+    }, [accessToken, setUsers]);
+
+    useEffect(() => {
+        if (accessToken) {
+            fetchChats();
+            fetchUsers();
+        }
+    }, [accessToken, fetchChats, fetchUsers]);
 
     const addNewChat = async (chatName, memberIds) => {
         try {

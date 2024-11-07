@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext, useRef, useLayoutEffect } from 'react';
+import React, { useState, useEffect, useContext, useRef, useLayoutEffect, useCallback } from 'react';
 import styles from './Chat.module.scss';
 import MessageList from '../MessageList/MessageList';
 import TypingIndicator from '../TypingIndicator/TypingIndicator';
@@ -19,18 +19,7 @@ function Chat({ chatId }) {
     const navigate = useNavigate();
     const isFirstLoad = useRef(true);
 
-    useEffect(() => {
-        const foundChat = chats.find(chat => chat.id === chatId);
-        if (foundChat) {
-            setChat(foundChat);
-        } else {
-            fetchChat();
-        }
-        fetchMessages();
-        isFirstLoad.current = true;
-    }, [chatId, chats]);
-
-    const fetchChat = async () => {
+    const fetchChat = useCallback(async () => {
         try {
             const response = await fetch(`/api/chat/${chatId}/`, {
                 headers: {
@@ -46,9 +35,9 @@ function Chat({ chatId }) {
         } catch (error) {
             console.error('Ошибка при получении данных чата:', error);
         }
-    };
+    }, [accessToken, chatId]);
 
-    const fetchMessages = async () => {
+    const fetchMessages = useCallback(async () => {
         let allMessages = [];
         let nextUrl = `/api/messages/?chat=${chatId}&limit=50`;
         try {
@@ -77,7 +66,18 @@ function Chat({ chatId }) {
         } catch (error) {
             console.error('Ошибка при получении сообщений:', error);
         }
-    };
+    }, [accessToken, chatId]);
+
+    useEffect(() => {
+        const foundChat = chats.find(chat => chat.id === chatId);
+        if (foundChat) {
+            setChat(foundChat);
+        } else {
+            fetchChat();
+        }
+        fetchMessages();
+        isFirstLoad.current = true;
+    }, [chatId, chats, fetchChat, fetchMessages]);
 
     const isUserAtBottom = () => {
         if (messageListRef.current) {
@@ -162,7 +162,7 @@ function Chat({ chatId }) {
         }, 5000);
 
         return () => clearInterval(intervalId);
-    }, [chatId]);
+    }, [chatId, fetchMessages]);
 
     const handleGoBack = () => {
         navigate('/');
