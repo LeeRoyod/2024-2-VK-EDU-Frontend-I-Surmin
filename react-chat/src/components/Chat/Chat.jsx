@@ -52,8 +52,14 @@ function Chat({ chatId }) {
                     allMessages = allMessages.concat(data.results);
 
                     if (data.next) {
-                        const nextUrlObj = new URL(data.next);
-                        nextUrl = nextUrlObj.pathname + nextUrlObj.search;
+                        if (process.env.NODE_ENV === 'development') {
+                            const url = new URL(data.next);
+                            nextUrl = `${url.pathname}${url.search}`;
+                        } else {
+                            nextUrl = data.next.startsWith('http://')
+                                ? data.next.replace('http://', 'https://')
+                                : data.next;
+                        }
                     } else {
                         nextUrl = null;
                     }

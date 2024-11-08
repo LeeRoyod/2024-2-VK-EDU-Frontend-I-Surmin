@@ -52,7 +52,9 @@ function ChatList() {
                             const url = new URL(data.next);
                             nextUrl = `${url.pathname}${url.search}`;
                         } else {
-                            nextUrl = data.next;
+                            nextUrl = data.next.startsWith('http://')
+                                ? data.next.replace('http://', 'https://')
+                                : data.next;
                         }
                     } else {
                         nextUrl = null;
@@ -88,7 +90,9 @@ function ChatList() {
                             const url = new URL(data.next);
                             nextUrl = `${url.pathname}${url.search}`;
                         } else {
-                            nextUrl = data.next;
+                            nextUrl = data.next.startsWith('http://')
+                                ? data.next.replace('http://', 'https://')
+                                : data.next;
                         }
                     } else {
                         nextUrl = null;
