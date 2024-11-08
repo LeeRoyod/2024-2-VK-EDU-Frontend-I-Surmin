@@ -36,7 +36,7 @@ function ChatList() {
     const fetchChats = useCallback(async () => {
         try {
             let allChats = [];
-            let nextUrl = '/api/chats/?page_size=100';
+            let nextUrl = `${process.env.REACT_APP_API_URL}/chats/?page_size=100`;
             while (nextUrl) {
                 const response = await fetch(nextUrl, {
                     headers: {
@@ -67,7 +67,7 @@ function ChatList() {
     const fetchUsers = useCallback(async () => {
         try {
             let allUsers = [];
-            let nextUrl = '/api/users/?page_size=100';
+            let nextUrl = `${process.env.REACT_APP_API_URL}/users/?page_size=100`;
 
             while (nextUrl) {
                 const response = await fetch(nextUrl, {
@@ -105,7 +105,7 @@ function ChatList() {
 
     const addNewChat = async (chatName, memberIds) => {
         try {
-            const response = await fetch('/api/chats/', {
+            const response = await fetch(`${process.env.REACT_APP_API_URL}/chats/`, {
                 method: 'POST',
                 headers: {
                     Authorization: `Bearer ${accessToken}`,
@@ -133,7 +133,7 @@ function ChatList() {
         const confirmed = window.confirm('Вы действительно хотите удалить этот чат?');
         if (!confirmed) return;
         try {
-            const response = await fetch(`/api/chat/${chatId}/`, {
+            const response = await fetch(`${process.env.REACT_APP_API_URL}/chat/${chatId}/`, {
                 method: 'DELETE',
                 headers: {
                     Authorization: `Bearer ${accessToken}`,

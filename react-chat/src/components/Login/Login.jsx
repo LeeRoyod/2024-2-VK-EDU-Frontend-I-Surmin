@@ -13,7 +13,7 @@ function Login() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const response = await fetch('https://vkedu-fullstack-div2.ru/api/auth/', {
+            const response = await fetch(`${process.env.REACT_APP_API_URL}/auth/`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

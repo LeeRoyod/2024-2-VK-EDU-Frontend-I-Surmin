@@ -29,7 +29,7 @@ function App() {
 
     const fetchProfile = useCallback(async (token) => {
         try {
-            const response = await fetch('/api/user/current/', {
+            const response = await fetch(`${process.env.REACT_APP_API_URL}/user/current/`, {
                 headers: {
                     'Authorization': `Bearer ${token}`,
                 },

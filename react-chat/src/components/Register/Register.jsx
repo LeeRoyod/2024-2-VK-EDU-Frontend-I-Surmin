@@ -32,13 +32,13 @@ function Register() {
         }
 
         try {
-            const response = await fetch('/api/register/', {
+            const response = await fetch(`${process.env.REACT_APP_API_URL}/register/`, {
                 method: 'POST',
                 body: formData,
             });
 
             if (response.ok) {
-                const loginResponse = await fetch('/api/auth/', {
+                const loginResponse = await fetch(`${process.env.REACT_APP_API_URL}/auth/`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',

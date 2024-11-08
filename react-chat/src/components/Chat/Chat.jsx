@@ -21,7 +21,7 @@ function Chat({ chatId }) {
 
     const fetchChat = useCallback(async () => {
         try {
-            const response = await fetch(`/api/chat/${chatId}/`, {
+            const response = await fetch(`${process.env.REACT_APP_API_URL}/chat/${chatId}/`, {
                 headers: {
                     'Authorization': `Bearer ${accessToken}`,
                 },
@@ -39,7 +39,7 @@ function Chat({ chatId }) {
 
     const fetchMessages = useCallback(async () => {
         let allMessages = [];
-        let nextUrl = `/api/messages/?chat=${chatId}&limit=50`;
+        let nextUrl = `${process.env.REACT_APP_API_URL}/messages/?chat=${chatId}&limit=50`;
         try {
             while (nextUrl) {
                 const response = await fetch(nextUrl, {
@@ -119,7 +119,7 @@ function Chat({ chatId }) {
         const text = inputText.trim();
         if (text !== '') {
             try {
-                const response = await fetch('/api/messages/', {
+                const response = await fetch(`${process.env.REACT_APP_API_URL}/messages/`, {
                     method: 'POST',
                     headers: {
                         'Authorization': `Bearer ${accessToken}`,
@@ -173,7 +173,7 @@ function Chat({ chatId }) {
         if (!confirmed) return;
 
         try {
-            const response = await fetch(`/api/message/${messageId}/`, {
+            const response = await fetch(`${process.env.REACT_APP_API_URL}/message/${messageId}/`, {
                 method: 'DELETE',
                 headers: {
                     'Authorization': `Bearer ${accessToken}`,
@@ -193,7 +193,7 @@ function Chat({ chatId }) {
 
     const onEditMessage = async (messageId, newText) => {
         try {
-            const response = await fetch(`/api/message/${messageId}/`, {
+            const response = await fetch(`${process.env.REACT_APP_API_URL}/message/${messageId}/`, {
                 method: 'PATCH',
                 headers: {
                     'Authorization': `Bearer ${accessToken}`,

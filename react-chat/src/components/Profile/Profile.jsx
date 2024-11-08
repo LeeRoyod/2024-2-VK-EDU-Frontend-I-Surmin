@@ -62,7 +62,7 @@ function Profile() {
             }
 
             try {
-                const response = await fetch(`/api/user/${profile.id}/`, {
+                const response = await fetch(`${process.env.REACT_APP_API_URL}/user/${profile.id}/`, {
                     method: 'PATCH',
                     headers: {
                         'Authorization': `Bearer ${accessToken}`,
