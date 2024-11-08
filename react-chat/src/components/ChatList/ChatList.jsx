@@ -48,8 +48,12 @@ function ChatList() {
                     allChats = allChats.concat(data.results);
 
                     if (data.next) {
-                        const url = new URL(data.next, window.location.origin);
-                        nextUrl = url.pathname + url.search;
+                        if (process.env.NODE_ENV === 'development') {
+                            const url = new URL(data.next);
+                            nextUrl = `${url.pathname}${url.search}`;
+                        } else {
+                            nextUrl = data.next;
+                        }
                     } else {
                         nextUrl = null;
                     }
@@ -80,8 +84,12 @@ function ChatList() {
                     allUsers = allUsers.concat(data.results);
 
                     if (data.next) {
-                        const url = new URL(data.next, window.location.origin);
-                        nextUrl = url.pathname + url.search;
+                        if (process.env.NODE_ENV === 'development') {
+                            const url = new URL(data.next);
+                            nextUrl = `${url.pathname}${url.search}`;
+                        } else {
+                            nextUrl = data.next;
+                        }
                     } else {
                         nextUrl = null;
                     }
