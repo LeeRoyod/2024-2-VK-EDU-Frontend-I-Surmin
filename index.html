@@ -1,1 +1,59 @@
-<!doctype html><html lang="ru"><head><meta charset="UTF-8"><title>Мессенджер</title><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"><script defer="defer" src="/2024-2-VK-EDU-Frontend-I-Surmin/static/js/main.a667e606.js"></script><link href="/2024-2-VK-EDU-Frontend-I-Surmin/static/css/main.da64633b.css" rel="stylesheet"></head><body><div id="root"></div></body></html>
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Диалог</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="b88d04fba731603756b1.css">
+<script defer src="index.bundle.js"></script><link href="index.css" rel="stylesheet"></head>
+<body>
+<script>
+    (function() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const chatId = urlParams.get('chatId');
+
+        if (!chatId) {
+            window.location.replace('chats.html');
+        }
+    })();
+</script>
+<div class="sidebar">
+    <fieldset class="toggle-container">
+        <legend>Выбор активного пользователя</legend>
+        <label class="toggle-label">
+            <input type="radio" name="message-filter" value="my" checked>
+            Мои сообщения
+        </label>
+        <label class="toggle-label">
+            <input type="radio" name="message-filter" value="others">
+            Сообщения собеседника
+        </label>
+    </fieldset>
+</div>
+<div class="form">
+    <header class="header">
+        <button class="header-button back-button" aria-label="Назад" onclick="window.location.href='chats.html'">
+            <span class="material-icons" aria-hidden="true">arrow_back</span>
+        </button>
+        <h1 class="header-title" id="chat-title">Чат</h1>
+    </header>
+    <form class="chat-form" action="/">
+        <ul class="message-list" aria-live="polite"></ul>
+        <div class="typing-indicator" style="display: none;">
+            <span class="dot"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+        </div>
+        <div class="input-container">
+            <span class="material-icons attach-icon" aria-hidden="true" title="Прикрепить файл">attach_file</span>
+            <input class="form-input" name="message-text" placeholder="Введите сообщение" type="text">
+            <button type="submit" class="send-button" aria-label="Отправить" title="Отправить">
+                <span class="material-icons send-icon" aria-hidden="true">send</span>
+            </button>
+        </div>
+    </form>
+</div>
+<script src="eac3a035f8c266e814d2.js"></script>
+</body>
+</html>
