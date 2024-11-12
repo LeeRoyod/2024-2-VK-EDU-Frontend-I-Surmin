@@ -45,9 +45,7 @@ function Register() {
             bio: bio.trim(),
             avatar: avatar,
         };
-
-        console.log('Отправляемые данные регистрации:', userData);
-
+        
         try {
             await Api.register(userData);
             const loginData = await Api.login(username.trim(), password.trim());
