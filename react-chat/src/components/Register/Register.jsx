@@ -3,6 +3,7 @@ import { TextField, Button } from '@mui/material';
 import AppContext from '../../context/AppContext';
 import { useNavigate } from 'react-router-dom';
 import styles from './Register.module.scss';
+import Api from '../../api/api';
 
 function Register() {
     const [username, setUsername] = useState('');
@@ -13,55 +14,47 @@ function Register() {
     const [avatar, setAvatar] = useState(null);
     const { handleLogin } = useContext(AppContext);
     const navigate = useNavigate();
+    const [errors, setErrors] = useState({});
 
     const handleAvatarChange = (e) => {
         setAvatar(e.target.files[0]);
     };
 
+    const validate = () => {
+        const newErrors = {};
+        if (!username.trim()) newErrors.username = 'Логин обязателен';
+        if (!password.trim()) newErrors.password = 'Пароль обязателен';
+        if (!firstName.trim()) newErrors.firstName = 'Имя обязательно';
+        if (!lastName.trim()) newErrors.lastName = 'Фамилия обязательна';
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        const formData = new FormData();
-        formData.append('username', username);
-        formData.append('password', password);
-        formData.append('first_name', firstName);
-        formData.append('last_name', lastName);
-        formData.append('bio', bio);
-        if (avatar) {
-            formData.append('avatar', avatar);
+        if (!validate()) {
+            return;
         }
 
+        const userData = {
+            username: username.trim(),
+            password: password.trim(),
+            first_name: firstName.trim(),
+            last_name: lastName.trim(),
+            bio: bio.trim(),
+            avatar: avatar,
+        };
+
+        console.log('Отправляемые данные регистрации:', userData);
+
         try {
-            const response = await fetch(`${process.env.REACT_APP_API_URL}/register/`, {
-                method: 'POST',
-                body: formData,
-            });
-
-            if (response.ok) {
-                const loginResponse = await fetch(`${process.env.REACT_APP_API_URL}/auth/`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        username,
-                        password,
-                    }),
-                });
-
-                if (loginResponse.ok) {
-                    const data = await loginResponse.json();
-                    handleLogin(data.access, data.refresh);
-                } else {
-                    console.error('Ошибка авторизации после регистрации');
-                }
-            } else {
-                const errorData = await response.json();
-                console.error('Ошибка регистрации:', errorData);
-                alert(`Ошибка регистрации: ${JSON.stringify(errorData)}`);
-            }
+            await Api.register(userData);
+            const loginData = await Api.login(username.trim(), password.trim());
+            handleLogin(loginData.access, loginData.refresh);
         } catch (error) {
             console.error('Ошибка при регистрации:', error);
+            alert(`Ошибка регистрации: ${error.message}`);
         }
     };
 
@@ -80,6 +73,9 @@ function Register() {
                     margin="normal"
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
+                    required
+                    error={!!errors.username}
+                    helperText={errors.username}
                 />
                 <TextField
                     label="Пароль"
@@ -89,6 +85,9 @@ function Register() {
                     margin="normal"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
+                    required
+                    error={!!errors.password}
+                    helperText={errors.password}
                 />
                 <TextField
                     label="Имя"
@@ -97,6 +96,9 @@ function Register() {
                     margin="normal"
                     value={firstName}
                     onChange={(e) => setFirstName(e.target.value)}
+                    required
+                    error={!!errors.firstName}
+                    helperText={errors.firstName}
                 />
                 <TextField
                     label="Фамилия"
@@ -105,6 +107,9 @@ function Register() {
                     margin="normal"
                     value={lastName}
                     onChange={(e) => setLastName(e.target.value)}
+                    required
+                    error={!!errors.lastName}
+                    helperText={errors.lastName}
                 />
                 <TextField
                     label="О себе"
@@ -126,7 +131,7 @@ function Register() {
                     />
                     <label htmlFor="avatar-upload">
                         <Button variant="contained" color="primary" component="span">
-                            Загрузить аватар
+                            {avatar ? 'Изменить аватар' : 'Загрузить аватар'}
                         </Button>
                         {avatar && <span style={{ marginLeft: '10px' }}>{avatar.name}</span>}
                     </label>

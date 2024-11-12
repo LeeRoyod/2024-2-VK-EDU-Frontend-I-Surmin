@@ -1,38 +1,24 @@
-import React, { useState, useContext } from 'react';
-import { TextField, Button } from '@mui/material';
+import React, {useState, useContext} from 'react';
+import {TextField, Button} from '@mui/material';
 import AppContext from '../../context/AppContext';
-import { useNavigate } from 'react-router-dom';
+import {useNavigate} from 'react-router-dom';
 import styles from './Login.module.scss';
+import Api from '../../api/api';
 
 function Login() {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
-    const { handleLogin } = useContext(AppContext);
+    const {handleLogin} = useContext(AppContext);
     const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const response = await fetch(`${process.env.REACT_APP_API_URL}/auth/`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    username,
-                    password,
-                }),
-            });
-            if (response.ok) {
-                const data = await response.json();
-                handleLogin(data.access, data.refresh);
-            } else {
-                const errorData = await response.json();
-                console.error('Ошибка авторизации:', errorData);
-                alert('Неправильный логин или пароль');
-            }
+            const data = await Api.login(username, password);
+            handleLogin(data.access, data.refresh);
         } catch (error) {
-            console.error('Ошибка при авторизации:', error);
+            console.error('Ошибка авторизации:', error);
+            alert('Неправильный логин или пароль');
         }
     };
 

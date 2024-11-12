@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext, useCallback } from 'react';
+import React, { useState, useContext, useEffect, useCallback } from 'react';
 import styles from './ChatList.module.scss';
 import ChatItem from '../ChatItem/ChatItem';
 import {
@@ -20,10 +20,11 @@ import {
 import { Edit, Menu as MenuIcon } from '@mui/icons-material';
 import AppContext from '../../context/AppContext';
 import { useNavigate } from 'react-router-dom';
+import Api from '../../api/api';
 
 function ChatList() {
     const [searchTerm, setSearchTerm] = useState('');
-    const { chats, setChats, accessToken, profile } = useContext(AppContext);
+    const { chats, setChats, profile } = useContext(AppContext);
     const navigate = useNavigate();
     const [users, setUsers] = useState([]);
     const [anchorEl, setAnchorEl] = useState(null);
@@ -33,133 +34,52 @@ function ChatList() {
     const [selectedUserIds, setSelectedUserIds] = useState([]);
     const [userSearchTerm, setUserSearchTerm] = useState('');
 
-    const fetchChats = useCallback(async () => {
+    const fetchChatsData = useCallback(async () => {
         try {
-            let allChats = [];
-            let nextUrl = `${process.env.REACT_APP_API_URL}/chats/?page_size=100`;
-            while (nextUrl) {
-                const response = await fetch(nextUrl, {
-                    headers: {
-                        Authorization: `Bearer ${accessToken}`,
-                    },
-                });
-                if (response.ok) {
-                    const data = await response.json();
-                    allChats = allChats.concat(data.results);
-
-                    if (data.next) {
-                        if (process.env.NODE_ENV === 'development') {
-                            const url = new URL(data.next);
-                            nextUrl = `${url.pathname}${url.search}`;
-                        } else {
-                            nextUrl = data.next.startsWith('http://')
-                                ? data.next.replace('http://', 'https://')
-                                : data.next;
-                        }
-                    } else {
-                        nextUrl = null;
-                    }
-                } else {
-                    console.error('Ошибка при получении чатов');
-                    break;
-                }
-            }
+            const allChats = await Api.getChats(100);
             setChats(allChats);
         } catch (error) {
             console.error('Ошибка при получении чатов:', error);
         }
-    }, [accessToken, setChats]);
+    }, [setChats]);
 
-    const fetchUsers = useCallback(async () => {
+    const fetchUsersData = useCallback(async () => {
         try {
-            let allUsers = [];
-            let nextUrl = `${process.env.REACT_APP_API_URL}/users/?page_size=100`;
-
-            while (nextUrl) {
-                const response = await fetch(nextUrl, {
-                    headers: {
-                        Authorization: `Bearer ${accessToken}`,
-                    },
-                });
-                if (response.ok) {
-                    const data = await response.json();
-                    allUsers = allUsers.concat(data.results);
-
-                    if (data.next) {
-                        if (process.env.NODE_ENV === 'development') {
-                            const url = new URL(data.next);
-                            nextUrl = `${url.pathname}${url.search}`;
-                        } else {
-                            nextUrl = data.next.startsWith('http://')
-                                ? data.next.replace('http://', 'https://')
-                                : data.next;
-                        }
-                    } else {
-                        nextUrl = null;
-                    }
-                } else {
-                    console.error('Ошибка при получении списка пользователей');
-                    break;
-                }
-            }
+            const allUsers = await Api.getUsers(100);
             setUsers(allUsers);
         } catch (error) {
             console.error('Ошибка при получении списка пользователей:', error);
         }
-    }, [accessToken, setUsers]);
+    }, []);
 
     useEffect(() => {
-        if (accessToken) {
-            fetchChats();
-            fetchUsers();
-        }
-    }, [accessToken, fetchChats, fetchUsers]);
+        fetchChatsData();
+        fetchUsersData();
+    }, [fetchChatsData, fetchUsersData]);
 
     const addNewChat = async (chatName, memberIds) => {
         try {
-            const response = await fetch(`${process.env.REACT_APP_API_URL}/chats/`, {
-                method: 'POST',
-                headers: {
-                    Authorization: `Bearer ${accessToken}`,
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    title: chatName,
-                    is_private: false,
-                    members: memberIds,
-                }),
+            await Api.createChat({
+                title: chatName,
+                is_private: false,
+                members: memberIds,
             });
-            if (response.ok) {
-                fetchChats();
-            } else {
-                const errorData = await response.json();
-                console.error('Ошибка при создании чата:', errorData);
-                alert(`Ошибка при создании чата: ${JSON.stringify(errorData)}`);
-            }
+            fetchChatsData();
         } catch (error) {
             console.error('Ошибка при создании чата:', error);
+            alert(`Ошибка при создании чата: ${error.message}`);
         }
     };
 
-    const deleteChat = async (chatId) => {
+    const deleteChatHandler = async (chatId) => {
         const confirmed = window.confirm('Вы действительно хотите удалить этот чат?');
         if (!confirmed) return;
         try {
-            const response = await fetch(`${process.env.REACT_APP_API_URL}/chat/${chatId}/`, {
-                method: 'DELETE',
-                headers: {
-                    Authorization: `Bearer ${accessToken}`,
-                },
-            });
-            if (response.ok) {
-                setChats(chats.filter((chat) => chat.id !== chatId));
-            } else {
-                const errorData = await response.json();
-                console.error('Ошибка при удалении чата:', errorData);
-                alert(`Ошибка при удалении чата: ${JSON.stringify(errorData)}`);
-            }
+            await Api.deleteChat(chatId);
+            setChats(chats.filter((chat) => chat.id !== chatId));
         } catch (error) {
             console.error('Ошибка при удалении чата:', error);
+            alert(`Ошибка при удалении чата: ${error.message}`);
         }
     };
 
@@ -264,7 +184,12 @@ function ChatList() {
             </header>
             <ul className={styles.chatList}>
                 {filteredChats.map((chat) => (
-                    <ChatItem key={chat.id} chat={chat} openChat={openChat} deleteChat={deleteChat} />
+                    <ChatItem
+                        key={chat.id}
+                        chat={chat}
+                        openChat={openChat}
+                        deleteChat={deleteChatHandler}
+                    />
                 ))}
             </ul>
             <Dialog
@@ -283,6 +208,7 @@ function ChatList() {
                         fullWidth
                         value={chatTitle}
                         onChange={(e) => setChatTitle(e.target.value)}
+                        required
                     />
                     <TextField
                         margin="dense"

@@ -6,11 +6,10 @@ import Profile from './components/Profile/Profile';
 import Login from './components/Login/Login';
 import Register from './components/Register/Register';
 import AppContext from './context/AppContext';
+import Api from './api/api';
 
 function App() {
     const [isAuthenticated, setIsAuthenticated] = useState(null);
-    const [accessToken, setAccessToken] = useState(null);
-    const [refreshToken, setRefreshToken] = useState(null);
     const [profile, setProfile] = useState(null);
     const [chats, setChats] = useState([]);
     const navigate = useNavigate();
@@ -19,28 +18,19 @@ function App() {
     const handleLogout = useCallback(() => {
         localStorage.removeItem('accessToken');
         localStorage.removeItem('refreshToken');
-        setAccessToken(null);
-        setRefreshToken(null);
         setIsAuthenticated(false);
         setProfile(null);
         setIsProfileLoaded(false);
+        Api.setAccessToken(null);
         navigate('/login');
     }, [navigate]);
 
-    const fetchProfile = useCallback(async (token) => {
+    const fetchProfileData = useCallback(async (token) => {
         try {
-            const response = await fetch(`${process.env.REACT_APP_API_URL}/user/current/`, {
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                },
-            });
-            if (response.ok) {
-                const data = await response.json();
-                setProfile(data);
-                setIsProfileLoaded(true);
-            } else {
-                handleLogout();
-            }
+            Api.setAccessToken(token);
+            const userData = await Api.getCurrentUser();
+            setProfile(userData);
+            setIsProfileLoaded(true);
         } catch (error) {
             console.error('Ошибка при получении профиля:', error);
             handleLogout();
@@ -50,26 +40,22 @@ function App() {
     const handleLogin = useCallback((access, refresh) => {
         localStorage.setItem('accessToken', access);
         localStorage.setItem('refreshToken', refresh);
-        setAccessToken(access);
-        setRefreshToken(refresh);
         setIsAuthenticated(true);
-        fetchProfile(access);
+        fetchProfileData(access);
         navigate('/');
-    }, [fetchProfile, navigate]);
+    }, [fetchProfileData, navigate]);
 
     useEffect(() => {
         const storedAccessToken = localStorage.getItem('accessToken');
         const storedRefreshToken = localStorage.getItem('refreshToken');
 
         if (storedAccessToken && storedRefreshToken) {
-            setAccessToken(storedAccessToken);
-            setRefreshToken(storedRefreshToken);
             setIsAuthenticated(true);
-            fetchProfile(storedAccessToken);
+            fetchProfileData(storedAccessToken);
         } else {
             setIsAuthenticated(false);
         }
-    }, [fetchProfile]);
+    }, [fetchProfileData]);
 
     if (isAuthenticated === null || (isAuthenticated && !isProfileLoaded)) {
         return <div>Загрузка...</div>;
@@ -78,8 +64,6 @@ function App() {
     return (
         <AppContext.Provider value={{
             isAuthenticated,
-            accessToken,
-            refreshToken,
             profile,
             setProfile,
             chats,

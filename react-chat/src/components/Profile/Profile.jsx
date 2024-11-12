@@ -1,12 +1,13 @@
-import React, {useContext, useState, useEffect} from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import styles from './Profile.module.scss';
-import {TextField, Button, IconButton, Avatar} from '@mui/material';
-import {ArrowBack} from '@mui/icons-material';
+import { TextField, Button, IconButton, Avatar } from '@mui/material';
+import { ArrowBack } from '@mui/icons-material';
 import AppContext from '../../context/AppContext';
-import {useNavigate} from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import Api from '../../api/api';
 
 function Profile() {
-    const {profile, setProfile, accessToken, handleLogout} = useContext(AppContext);
+    const { profile, setProfile, handleLogout } = useContext(AppContext);
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [firstName, setFirstName] = useState('');
@@ -49,38 +50,26 @@ function Profile() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (validate()) {
-            const formData = new FormData();
-            formData.append('username', username.trim());
-            formData.append('first_name', firstName.trim());
-            formData.append('last_name', lastName.trim());
-            formData.append('bio', bio.trim());
+            const userData = {
+                username: username.trim(),
+                first_name: firstName.trim(),
+                last_name: lastName.trim(),
+                bio: bio.trim(),
+            };
             if (password) {
-                formData.append('password', password);
+                userData.password = password;
             }
             if (avatar) {
-                formData.append('avatar', avatar);
+                userData.avatar = avatar;
             }
 
             try {
-                const response = await fetch(`${process.env.REACT_APP_API_URL}/user/${profile.id}/`, {
-                    method: 'PATCH',
-                    headers: {
-                        'Authorization': `Bearer ${accessToken}`,
-                    },
-                    body: formData,
-                });
-
-                if (response.ok) {
-                    const updatedProfile = await response.json();
-                    setProfile(updatedProfile);
-                    navigate('/');
-                } else {
-                    const errorData = await response.json();
-                    console.error('Ошибка при обновлении профиля:', errorData);
-                    alert(`Ошибка при обновлении профиля: ${JSON.stringify(errorData)}`);
-                }
+                const updatedProfile = await Api.updateUser(profile.id, userData);
+                setProfile(updatedProfile);
+                navigate('/');
             } catch (error) {
                 console.error('Ошибка при обновлении профиля:', error);
+                alert(`Ошибка при обновлении профиля: ${JSON.stringify(error)}`);
             }
         }
     };
@@ -97,7 +86,7 @@ function Profile() {
         <div className={styles.profileContainer}>
             <header className={styles.header}>
                 <IconButton className={styles.backButton} onClick={handleGoBack}>
-                    <ArrowBack/>
+                    <ArrowBack />
                 </IconButton>
                 <h1 className={styles.profileTitle}>Мой профиль</h1>
             </header>
@@ -105,7 +94,7 @@ function Profile() {
                 <div className={styles.avatarContainer}>
                     <Avatar
                         src={profile.avatar}
-                        sx={{width: 100, height: 100, fontSize: 48}}
+                        sx={{ width: 100, height: 100, fontSize: 48 }}
                     >
                         {!profile.avatar && profile.first_name.charAt(0)}
                     </Avatar>
@@ -162,7 +151,7 @@ function Profile() {
                 <div className={styles.avatarUpload}>
                     <input
                         accept="image/*"
-                        style={{display: 'none'}}
+                        style={{ display: 'none' }}
                         id="avatar-upload"
                         type="file"
                         onChange={handleAvatarChange}
@@ -171,7 +160,7 @@ function Profile() {
                         <Button variant="contained" color="primary" component="span">
                             {avatar ? 'Изменить аватар' : 'Загрузить аватар'}
                         </Button>
-                        {avatar && <span style={{marginLeft: '10px'}}>{avatar.name}</span>}
+                        {avatar && <span style={{ marginLeft: '10px' }}>{avatar.name}</span>}
                     </label>
                 </div>
                 <Button

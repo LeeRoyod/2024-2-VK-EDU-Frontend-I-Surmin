@@ -6,12 +6,13 @@ import { IconButton, TextField } from '@mui/material';
 import { ArrowBack, AttachFile, Send } from '@mui/icons-material';
 import AppContext from '../../context/AppContext';
 import { useNavigate } from 'react-router-dom';
+import Api from '../../api/api';
 
 function Chat({ chatId }) {
     const [chat, setChat] = useState(null);
     const [messages, setMessages] = useState([]);
     const [inputText, setInputText] = useState('');
-    const { profile, accessToken, chats } = useContext(AppContext);
+    const { profile, chats } = useContext(AppContext);
     const messageListRef = useRef(null);
     const [isTyping, setIsTyping] = useState(false);
     const typingTimeoutRef = useRef(null);
@@ -19,71 +20,34 @@ function Chat({ chatId }) {
     const navigate = useNavigate();
     const isFirstLoad = useRef(true);
 
-    const fetchChat = useCallback(async () => {
+    const fetchChatData = useCallback(async () => {
         try {
-            const response = await fetch(`${process.env.REACT_APP_API_URL}/chat/${chatId}/`, {
-                headers: {
-                    'Authorization': `Bearer ${accessToken}`,
-                },
-            });
-            if (response.ok) {
-                const chatData = await response.json();
-                setChat(chatData);
-            } else {
-                console.error('Ошибка при получении данных чата');
-            }
+            const chatData = await Api.getChat(chatId);
+            setChat(chatData);
         } catch (error) {
             console.error('Ошибка при получении данных чата:', error);
         }
-    }, [accessToken, chatId]);
+    }, [chatId]);
 
-    const fetchMessages = useCallback(async () => {
-        let allMessages = [];
-        let nextUrl = `${process.env.REACT_APP_API_URL}/messages/?chat=${chatId}&limit=50`;
+    const fetchMessagesData = useCallback(async () => {
         try {
-            while (nextUrl) {
-                const response = await fetch(nextUrl, {
-                    headers: {
-                        'Authorization': `Bearer ${accessToken}`,
-                    },
-                });
-                if (response.ok) {
-                    const data = await response.json();
-                    allMessages = allMessages.concat(data.results);
-
-                    if (data.next) {
-                        if (process.env.NODE_ENV === 'development') {
-                            const url = new URL(data.next);
-                            nextUrl = `${url.pathname}${url.search}`;
-                        } else {
-                            nextUrl = data.next.startsWith('http://')
-                                ? data.next.replace('http://', 'https://')
-                                : data.next;
-                        }
-                    } else {
-                        nextUrl = null;
-                    }
-                } else {
-                    console.error('Ошибка при получении сообщений');
-                    break;
-                }
-            }
+            const allMessages = await Api.getMessages(chatId, 50);
             setMessages(allMessages.reverse());
         } catch (error) {
             console.error('Ошибка при получении сообщений:', error);
         }
-    }, [accessToken, chatId]);
+    }, [chatId]);
 
     useEffect(() => {
         const foundChat = chats.find(chat => chat.id === chatId);
         if (foundChat) {
             setChat(foundChat);
         } else {
-            fetchChat();
+            fetchChatData();
         }
-        fetchMessages();
+        fetchMessagesData();
         isFirstLoad.current = true;
-    }, [chatId, chats, fetchChat, fetchMessages]);
+    }, [chatId, chats, fetchChatData, fetchMessagesData]);
 
     const isUserAtBottom = () => {
         if (messageListRef.current) {
@@ -125,50 +89,39 @@ function Chat({ chatId }) {
         const text = inputText.trim();
         if (text !== '') {
             try {
-                const response = await fetch(`${process.env.REACT_APP_API_URL}/messages/`, {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${accessToken}`,
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        text: text,
-                        chat: chatId,
-                    }),
+                const newMessage = await Api.sendMessage({
+                    text: text,
+                    chat: chatId,
                 });
 
-                if (response.ok) {
-                    const newMessage = await response.json();
-                    newMessage.sender = {
-                        id: profile.id,
-                        username: profile.username,
-                        first_name: profile.first_name,
-                        last_name: profile.last_name,
-                        bio: profile.bio,
-                        avatar: profile.avatar,
-                    };
+                newMessage.sender = {
+                    id: profile.id,
+                    username: profile.username,
+                    first_name: profile.first_name,
+                    last_name: profile.last_name,
+                    bio: profile.bio,
+                    avatar: profile.avatar,
+                };
 
-                    setMessages([...messages, newMessage]);
-                    setInputText('');
-                    setIsTyping(false);
-                    setLastSentMessageId(newMessage.id);
-                    scrollToBottom();
-                } else {
-                    console.error('Ошибка при отправке сообщения');
-                }
+                setMessages([...messages, newMessage]);
+                setInputText('');
+                setIsTyping(false);
+                setLastSentMessageId(newMessage.id);
+                scrollToBottom();
             } catch (error) {
                 console.error('Ошибка при отправке сообщения:', error);
+                alert(`Ошибка при отправке сообщения: ${error.message}`);
             }
         }
     };
 
     useEffect(() => {
         const intervalId = setInterval(() => {
-            fetchMessages();
+            fetchMessagesData();
         }, 5000);
 
         return () => clearInterval(intervalId);
-    }, [chatId, fetchMessages]);
+    }, [chatId, fetchMessagesData]);
 
     const handleGoBack = () => {
         navigate('/');
@@ -179,46 +132,21 @@ function Chat({ chatId }) {
         if (!confirmed) return;
 
         try {
-            const response = await fetch(`${process.env.REACT_APP_API_URL}/message/${messageId}/`, {
-                method: 'DELETE',
-                headers: {
-                    'Authorization': `Bearer ${accessToken}`,
-                },
-            });
-            if (response.ok) {
-                setMessages(messages.filter((msg) => msg.id !== messageId));
-            } else {
-                const errorData = await response.json();
-                console.error('Ошибка при удалении сообщения:', errorData);
-                alert(`Ошибка при удалении сообщения: ${JSON.stringify(errorData)}`);
-            }
+            await Api.deleteMessage(messageId);
+            setMessages(messages.filter((msg) => msg.id !== messageId));
         } catch (error) {
             console.error('Ошибка при удалении сообщения:', error);
+            alert(`Ошибка при удалении сообщения: ${error.message}`);
         }
     };
 
     const onEditMessage = async (messageId, newText) => {
         try {
-            const response = await fetch(`${process.env.REACT_APP_API_URL}/message/${messageId}/`, {
-                method: 'PATCH',
-                headers: {
-                    'Authorization': `Bearer ${accessToken}`,
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    text: newText,
-                }),
-            });
-            if (response.ok) {
-                const updatedMessage = await response.json();
-                setMessages(messages.map((msg) => (msg.id === messageId ? updatedMessage : msg)));
-            } else {
-                const errorData = await response.json();
-                console.error('Ошибка при редактировании сообщения:', errorData);
-                alert(`Ошибка при редактировании сообщения: ${JSON.stringify(errorData)}`);
-            }
+            const updatedMessage = await Api.editMessage(messageId, { text: newText });
+            setMessages(messages.map((msg) => (msg.id === messageId ? updatedMessage : msg)));
         } catch (error) {
             console.error('Ошибка при редактировании сообщения:', error);
+            alert(`Ошибка при редактировании сообщения: ${error.message}`);
         }
     };
 
@@ -254,6 +182,7 @@ function Chat({ chatId }) {
                         size="small"
                         value={inputText}
                         onChange={handleInputChange}
+                        required
                     />
                     <IconButton className={styles.sendButton} type="submit">
                         <Send />
