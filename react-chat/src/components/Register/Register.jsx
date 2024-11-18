@@ -1,11 +1,11 @@
 import React, { useState, useContext } from 'react';
 import { TextField, Button } from '@mui/material';
-import AppContext from '../../context/AppContext';
+import { AppContext } from '../../context/AppContext';
 import { useNavigate } from 'react-router-dom';
 import styles from './Register.module.scss';
-import Api from '../../api/api';
+import { Api } from '../../api';
 
-function Register() {
+export const Register = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [firstName, setFirstName] = useState('');
@@ -156,5 +156,3 @@ function Register() {
         </div>
     );
 }
-
-export default Register;

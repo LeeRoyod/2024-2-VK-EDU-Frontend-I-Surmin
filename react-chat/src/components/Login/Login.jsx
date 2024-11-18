@@ -1,11 +1,11 @@
-import React, {useState, useContext} from 'react';
-import {TextField, Button} from '@mui/material';
-import AppContext from '../../context/AppContext';
-import {useNavigate} from 'react-router-dom';
+import React, { useState, useContext } from 'react';
+import { TextField, Button } from '@mui/material';
+import { AppContext } from '../../context/AppContext';
+import { useNavigate } from 'react-router-dom';
 import styles from './Login.module.scss';
-import Api from '../../api/api';
+import { Api } from '../../api';
 
-function Login() {
+export const Login = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const {handleLogin} = useContext(AppContext);
@@ -66,5 +66,3 @@ function Login() {
         </div>
     );
 }
-
-export default Login;

@@ -1,14 +1,14 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Routes, Route, Navigate, useParams, useNavigate } from 'react-router-dom';
-import ChatList from './components/ChatList/ChatList';
-import Chat from './components/Chat/Chat';
-import Profile from './components/Profile/Profile';
-import Login from './components/Login/Login';
-import Register from './components/Register/Register';
-import AppContext from './context/AppContext';
-import Api from './api/api';
+import { ChatList } from './components/ChatList/ChatList';
+import { Chat } from './components/Chat/Chat';
+import { Profile } from './components/Profile/Profile';
+import { Login } from './components/Login/Login';
+import { Register } from './components/Register/Register';
+import { AppContext } from './context/AppContext';
+import { Api } from './api';
 
-function App() {
+export const App = () => {
     const [isAuthenticated, setIsAuthenticated] = useState(null);
     const [profile, setProfile] = useState(null);
     const [chats, setChats] = useState([]);
@@ -87,5 +87,3 @@ function ChatWrapper() {
     const { chatId } = useParams();
     return <Chat chatId={chatId} />;
 }
-
-export default App;

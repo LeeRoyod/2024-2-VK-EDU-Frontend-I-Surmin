@@ -1,6 +1,6 @@
 import React from 'react';
 
-const AppContext = React.createContext({
+export const AppContext = React.createContext({
     isAuthenticated: false,
     profile: null,
     setProfile: () => {},
@@ -9,5 +9,3 @@ const AppContext = React.createContext({
     handleLogin: () => {},
     handleLogout: () => {},
 });
-
-export default AppContext;

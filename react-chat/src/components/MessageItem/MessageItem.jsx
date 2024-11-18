@@ -3,7 +3,7 @@ import styles from './MessageItem.module.scss';
 import { Typography, Avatar, IconButton, TextField } from '@mui/material';
 import { Edit, Delete, Save, Close } from '@mui/icons-material';
 
-function MessageItem({ message, isMyMessage, isNew, onDeleteMessage, onEditMessage }) {
+export const MessageItem = ({ message, isMyMessage, isNew, onDeleteMessage, onEditMessage }) => {
     const { text, sender, created_at } = message;
     const [isEditing, setIsEditing] = useState(false);
     const [editedText, setEditedText] = useState(text);
@@ -105,5 +105,3 @@ function MessageItem({ message, isMyMessage, isNew, onDeleteMessage, onEditMessa
         </li>
     );
 }
-
-export default MessageItem;

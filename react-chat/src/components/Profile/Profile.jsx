@@ -2,11 +2,11 @@ import React, { useContext, useState, useEffect } from 'react';
 import styles from './Profile.module.scss';
 import { TextField, Button, IconButton, Avatar } from '@mui/material';
 import { ArrowBack } from '@mui/icons-material';
-import AppContext from '../../context/AppContext';
+import { AppContext } from '../../context/AppContext';
 import { useNavigate } from 'react-router-dom';
-import Api from '../../api/api';
+import { Api } from '../../api';
 
-function Profile() {
+export const Profile = () => {
     const { profile, setProfile, handleLogout } = useContext(AppContext);
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
@@ -183,5 +183,3 @@ function Profile() {
         </div>
     );
 }
-
-export default Profile;

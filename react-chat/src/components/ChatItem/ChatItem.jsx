@@ -1,10 +1,10 @@
 import React, { useContext } from 'react';
 import styles from './ChatItem.module.scss';
-import AppContext from '../../context/AppContext';
+import { AppContext } from '../../context/AppContext';
 import { Avatar, IconButton } from '@mui/material';
 import { Delete } from '@mui/icons-material';
 
-function ChatItem({ chat, openChat, deleteChat }) {
+export const ChatItem = ({ chat, openChat, deleteChat }) => {
     const { profile } = useContext(AppContext);
 
     if (!profile) {
@@ -66,5 +66,3 @@ function ChatItem({ chat, openChat, deleteChat }) {
         </li>
     );
 }
-
-export default ChatItem;

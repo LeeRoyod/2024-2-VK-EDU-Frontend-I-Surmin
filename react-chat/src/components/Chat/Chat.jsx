@@ -1,14 +1,14 @@
 import React, { useState, useEffect, useContext, useRef, useLayoutEffect, useCallback } from 'react';
 import styles from './Chat.module.scss';
-import MessageList from '../MessageList/MessageList';
-import TypingIndicator from '../TypingIndicator/TypingIndicator';
+import { MessageList } from '../MessageList/MessageList';
+import { TypingIndicator } from '../TypingIndicator/TypingIndicator';
 import { IconButton, TextField } from '@mui/material';
 import { ArrowBack, AttachFile, Send } from '@mui/icons-material';
-import AppContext from '../../context/AppContext';
+import { AppContext } from '../../context/AppContext';
 import { useNavigate } from 'react-router-dom';
-import Api from '../../api/api';
+import { Api } from '../../api';
 
-function Chat({ chatId }) {
+export const Chat = ({ chatId }) => {
     const [chat, setChat] = useState(null);
     const [messages, setMessages] = useState([]);
     const [inputText, setInputText] = useState('');
@@ -192,5 +192,3 @@ function Chat({ chatId }) {
         </div>
     );
 }
-
-export default Chat;

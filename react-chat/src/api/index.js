@@ -1,6 +1,6 @@
 const API_URL = process.env.REACT_APP_API_URL;
 
-const Api = (() => {
+export const Api = (() => {
     let accessToken = null;
 
     const setAccessToken = (token) => {
@@ -202,5 +202,3 @@ const Api = (() => {
         getUsers,
     };
 })();
-
-export default Api;

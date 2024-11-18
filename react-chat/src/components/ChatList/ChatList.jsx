@@ -1,6 +1,6 @@
 import React, { useState, useContext, useEffect, useCallback } from 'react';
 import styles from './ChatList.module.scss';
-import ChatItem from '../ChatItem/ChatItem';
+import { ChatItem } from '../ChatItem/ChatItem';
 import {
     TextField,
     IconButton,
@@ -18,11 +18,11 @@ import {
     Checkbox,
 } from '@mui/material';
 import { Edit, Menu as MenuIcon } from '@mui/icons-material';
-import AppContext from '../../context/AppContext';
+import { AppContext } from '../../context/AppContext';
 import { useNavigate } from 'react-router-dom';
-import Api from '../../api/api';
+import { Api } from '../../api';
 
-function ChatList() {
+export const ChatList = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const { chats, setChats, profile } = useContext(AppContext);
     const navigate = useNavigate();
@@ -256,5 +256,3 @@ function ChatList() {
         </div>
     );
 }
-
-export default ChatList;

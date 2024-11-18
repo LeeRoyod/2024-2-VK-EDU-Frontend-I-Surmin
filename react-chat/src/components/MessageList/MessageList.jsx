@@ -1,9 +1,9 @@
 import React, { useContext } from 'react';
 import styles from './MessageList.module.scss';
-import MessageItem from '../MessageItem/MessageItem';
-import AppContext from '../../context/AppContext';
+import { MessageItem } from '../MessageItem/MessageItem';
+import { AppContext } from '../../context/AppContext';
 
-function MessageList({ messages, messageListRef, lastSentMessageId, onDeleteMessage, onEditMessage }) {
+export const MessageList = ({ messages, messageListRef, lastSentMessageId, onDeleteMessage, onEditMessage }) => {
     const { profile } = useContext(AppContext);
 
     const messageItems = messages.map((message) => {
@@ -28,5 +28,3 @@ function MessageList({ messages, messageListRef, lastSentMessageId, onDeleteMess
         </ul>
     );
 }
-
-export default MessageList;
