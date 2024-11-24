@@ -1,36 +1,71 @@
-import React, { useState, useEffect, useContext, useRef } from 'react';
+import React, { useState, useEffect, useContext, useRef, useLayoutEffect, useCallback } from 'react';
 import styles from './Chat.module.scss';
-import MessageList from '../MessageList/MessageList';
-import TypingIndicator from '../TypingIndicator/TypingIndicator';
-import { IconButton, TextField, RadioGroup, FormControlLabel, Radio } from '@mui/material';
+import { MessageList } from '../MessageList/MessageList';
+import { TypingIndicator } from '../TypingIndicator/TypingIndicator';
+import { IconButton, TextField } from '@mui/material';
 import { ArrowBack, AttachFile, Send } from '@mui/icons-material';
-import AppContext from '../../context/AppContext';
+import { AppContext } from '../../context/AppContext';
 import { useNavigate } from 'react-router-dom';
+import { Api } from '../../api';
 
-function Chat({ chatId }) {
+export const Chat = ({ chatId }) => {
+    const [chat, setChat] = useState(null);
     const [messages, setMessages] = useState([]);
     const [inputText, setInputText] = useState('');
-    const [filterValue, setFilterValue] = useState('my');
     const { profile, chats } = useContext(AppContext);
     const messageListRef = useRef(null);
-
     const [isTyping, setIsTyping] = useState(false);
     const typingTimeoutRef = useRef(null);
-
     const [lastSentMessageId, setLastSentMessageId] = useState(null);
-
-    const chat = chats.find(chat => chat.id === chatId);
-    const chatTitle = chat ? chat.name : 'Чат';
-
     const navigate = useNavigate();
+    const isFirstLoad = useRef(true);
 
-    useEffect(() => {
-        const storedMessages = JSON.parse(localStorage.getItem(`messages_${chatId}`)) || [];
-        setMessages(storedMessages);
+    const fetchChatData = useCallback(async () => {
+        try {
+            const chatData = await Api.getChat(chatId);
+            setChat(chatData);
+        } catch (error) {
+            console.error('Ошибка при получении данных чата:', error);
+        }
+    }, [chatId]);
+
+    const fetchMessagesData = useCallback(async () => {
+        try {
+            const allMessages = await Api.getMessages(chatId, 50);
+            setMessages(allMessages.reverse());
+        } catch (error) {
+            console.error('Ошибка при получении сообщений:', error);
+        }
     }, [chatId]);
 
     useEffect(() => {
-        scrollToBottom();
+        const foundChat = chats.find(chat => chat.id === chatId);
+        if (foundChat) {
+            setChat(foundChat);
+        } else {
+            fetchChatData();
+        }
+        fetchMessagesData();
+        isFirstLoad.current = true;
+    }, [chatId, chats, fetchChatData, fetchMessagesData]);
+
+    const isUserAtBottom = () => {
+        if (messageListRef.current) {
+            const { scrollTop, scrollHeight, clientHeight } = messageListRef.current;
+            return scrollHeight - scrollTop <= clientHeight + 50;
+        }
+        return false;
+    };
+
+    useLayoutEffect(() => {
+        if (messageListRef.current && messages.length > 0) {
+            if (isFirstLoad.current) {
+                scrollToBottom();
+                isFirstLoad.current = false;
+            } else if (isUserAtBottom()) {
+                scrollToBottom();
+            }
+        }
     }, [messages]);
 
     const scrollToBottom = () => {
@@ -41,7 +76,6 @@ function Chat({ chatId }) {
 
     const handleInputChange = (e) => {
         setInputText(e.target.value);
-
         setIsTyping(true);
         clearTimeout(typingTimeoutRef.current);
 
@@ -50,60 +84,75 @@ function Chat({ chatId }) {
         }, 2000);
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         const text = inputText.trim();
-        let nickname;
-        let name;
-        if (filterValue === 'my') {
-            nickname = profile.nickname;
-            name = profile.name;
-        } else {
-            nickname = "@"+chatTitle;
-            name = chatTitle;
-        }
         if (text !== '') {
-            const now = new Date();
-            const time = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-            const newMessage = {
-                id: Date.now(),
-                text: text,
-                time: time,
-                nickname: nickname,
-                name: name,
-                read: false
-            };
-            const updatedMessages = [...messages, newMessage];
-            setMessages(updatedMessages);
-            localStorage.setItem(`messages_${chatId}`, JSON.stringify(updatedMessages));
-            setInputText('');
-            setIsTyping(false);
-            setLastSentMessageId(newMessage.id);
+            try {
+                const newMessage = await Api.sendMessage({
+                    text: text,
+                    chat: chatId,
+                });
+
+                newMessage.sender = {
+                    id: profile.id,
+                    username: profile.username,
+                    first_name: profile.first_name,
+                    last_name: profile.last_name,
+                    bio: profile.bio,
+                    avatar: profile.avatar,
+                };
+
+                setMessages([...messages, newMessage]);
+                setInputText('');
+                setIsTyping(false);
+                setLastSentMessageId(newMessage.id);
+                scrollToBottom();
+            } catch (error) {
+                console.error('Ошибка при отправке сообщения:', error);
+                alert(`Ошибка при отправке сообщения: ${error.message}`);
+            }
         }
     };
 
-    const handleFilterChange = (e) => {
-        const newFilter = e.target.value;
-        setFilterValue(newFilter);
-        markMessagesAsRead(newFilter);
-    };
+    useEffect(() => {
+        const intervalId = setInterval(() => {
+            fetchMessagesData();
+        }, 5000);
 
-    const markMessagesAsRead = (filter) => {
-        const updatedMessages = messages.map(msg => {
-            if (filter === 'my' && msg.nickname !== profile.nickname && !msg.read) {
-                return { ...msg, read: true };
-            } else if (filter === 'others' && msg.nickname === profile.nickname && !msg.read) {
-                return { ...msg, read: true };
-            }
-            return msg;
-        });
-        setMessages(updatedMessages);
-        localStorage.setItem(`messages_${chatId}`, JSON.stringify(updatedMessages));
-    };
+        return () => clearInterval(intervalId);
+    }, [chatId, fetchMessagesData]);
 
     const handleGoBack = () => {
         navigate('/');
     };
+
+    const onDeleteMessage = async (messageId) => {
+        const confirmed = window.confirm('Вы действительно хотите удалить это сообщение?');
+        if (!confirmed) return;
+
+        try {
+            await Api.deleteMessage(messageId);
+            setMessages(messages.filter((msg) => msg.id !== messageId));
+        } catch (error) {
+            console.error('Ошибка при удалении сообщения:', error);
+            alert(`Ошибка при удалении сообщения: ${error.message}`);
+        }
+    };
+
+    const onEditMessage = async (messageId, newText) => {
+        try {
+            const updatedMessage = await Api.editMessage(messageId, { text: newText });
+            setMessages(messages.map((msg) => (msg.id === messageId ? updatedMessage : msg)));
+        } catch (error) {
+            console.error('Ошибка при редактировании сообщения:', error);
+            alert(`Ошибка при редактировании сообщения: ${error.message}`);
+        }
+    };
+
+    if (!chat) {
+        return <div className={styles.loading}>Загрузка чата...</div>;
+    }
 
     return (
         <div className={styles.chatContainer}>
@@ -111,22 +160,14 @@ function Chat({ chatId }) {
                 <IconButton className={styles.backButton} onClick={handleGoBack}>
                     <ArrowBack />
                 </IconButton>
-                <h1 className={styles.chatTitle}>{chatTitle}</h1>
+                <h1 className={styles.chatTitle}>{chat.title}</h1>
             </header>
-            <RadioGroup
-                row
-                value={filterValue}
-                onChange={handleFilterChange}
-                className={styles.filterGroup}
-            >
-                <FormControlLabel value="my" control={<Radio />} label="Я" />
-                <FormControlLabel value="others" control={<Radio />} label="Собеседник" />
-            </RadioGroup>
             <MessageList
                 messages={messages}
-                filterValue={filterValue}
                 messageListRef={messageListRef}
                 lastSentMessageId={lastSentMessageId}
+                onDeleteMessage={onDeleteMessage}
+                onEditMessage={onEditMessage}
             />
             {isTyping && <TypingIndicator />}
             <form className={styles.chatForm} onSubmit={handleSubmit}>
@@ -141,6 +182,7 @@ function Chat({ chatId }) {
                         size="small"
                         value={inputText}
                         onChange={handleInputChange}
+                        required
                     />
                     <IconButton className={styles.sendButton} type="submit">
                         <Send />
@@ -150,5 +192,3 @@ function Chat({ chatId }) {
         </div>
     );
 }
-
-export default Chat;

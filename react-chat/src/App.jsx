@@ -1,99 +1,89 @@
-import React, { useState, useEffect } from 'react';
-import { Routes, Route, Navigate, useParams } from 'react-router-dom';
-import ChatList from './components/ChatList/ChatList';
-import Chat from './components/Chat/Chat';
-import Profile from './components/Profile/Profile';
-import AppContext from './context/AppContext';
-import { avatars, defaultAvatar } from './assets/avatars';
+import React, { useState, useEffect, useCallback } from 'react';
+import { Routes, Route, Navigate, useParams, useNavigate } from 'react-router-dom';
+import { ChatList } from './components/ChatList/ChatList';
+import { Chat } from './components/Chat/Chat';
+import { Profile } from './components/Profile/Profile';
+import { Login } from './components/Login/Login';
+import { Register } from './components/Register/Register';
+import { AppContext } from './context/AppContext';
+import { Api } from './api';
 
-function App() {
+export const App = () => {
+    const [isAuthenticated, setIsAuthenticated] = useState(null);
+    const [profile, setProfile] = useState(null);
     const [chats, setChats] = useState([]);
-    const [profile, setProfile] = useState({
-        name: 'Илья',
-        nickname: '@Илья',
-        about: '',
-    });
+    const navigate = useNavigate();
+    const [isProfileLoaded, setIsProfileLoaded] = useState(false);
+
+    const handleLogout = useCallback(() => {
+        localStorage.removeItem('accessToken');
+        localStorage.removeItem('refreshToken');
+        setIsAuthenticated(false);
+        setProfile(null);
+        setIsProfileLoaded(false);
+        Api.setAccessToken(null);
+        navigate('/login');
+    }, [navigate]);
+
+    const fetchProfileData = useCallback(async (token) => {
+        try {
+            Api.setAccessToken(token);
+            const userData = await Api.getCurrentUser();
+            setProfile(userData);
+            setIsProfileLoaded(true);
+        } catch (error) {
+            console.error('Ошибка при получении профиля:', error);
+            handleLogout();
+        }
+    }, [handleLogout]);
+
+    const handleLogin = useCallback((access, refresh) => {
+        localStorage.setItem('accessToken', access);
+        localStorage.setItem('refreshToken', refresh);
+        setIsAuthenticated(true);
+        fetchProfileData(access);
+        navigate('/');
+    }, [fetchProfileData, navigate]);
 
     useEffect(() => {
-        let storedChats = JSON.parse(localStorage.getItem('chats')) || [];
+        const storedAccessToken = localStorage.getItem('accessToken');
+        const storedRefreshToken = localStorage.getItem('refreshToken');
 
-        storedChats = storedChats.map((chat, index) => ({
-            ...chat,
-            avatar: chat.avatar || avatars[index % avatars.length] || defaultAvatar,
-        }));
+        if (storedAccessToken && storedRefreshToken) {
+            setIsAuthenticated(true);
+            fetchProfileData(storedAccessToken);
+        } else {
+            setIsAuthenticated(false);
+        }
+    }, [fetchProfileData]);
 
-        setChats(storedChats);
-        localStorage.setItem('chats', JSON.stringify(storedChats));
-    }, []);
-
-    useEffect(() => {
-        const storedProfile = JSON.parse(localStorage.getItem('profile')) || {
-            name: 'Илья',
-            nickname: '@Илья',
-            about: '',
-        };
-        setProfile(storedProfile);
-    }, []);
-
-    useEffect(() => {
-        localStorage.setItem('profile', JSON.stringify(profile));
-    }, [profile]);
-
-    const addNewChat = (chatName) => {
-        const newChatId = Date.now();
-        const avatar = avatars[newChatId % avatars.length] || defaultAvatar;
-        const newChat = {
-            id: newChatId,
-            name: chatName,
-            avatar: avatar,
-        };
-        const updatedChats = [...chats, newChat];
-        setChats(updatedChats);
-        localStorage.setItem('chats', JSON.stringify(updatedChats));
-
-        const initialMessage = {
-            id: Date.now(),
-            text: 'Чат создан',
-            time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-            nickname: 'Система',
-            name: 'Система',
-            read: true,
-        };
-        localStorage.setItem(`messages_${newChatId}`, JSON.stringify([initialMessage]));
-    };
+    if (isAuthenticated === null || (isAuthenticated && !isProfileLoaded)) {
+        return <div>Загрузка...</div>;
+    }
 
     return (
         <AppContext.Provider value={{
+            isAuthenticated,
             profile,
             setProfile,
             chats,
-            setChats
+            setChats,
+            handleLogin,
+            handleLogout,
         }}>
             <Routes>
-                <Route path="/" element={<ChatList addNewChat={addNewChat} />} />
-                <Route path="/chat/:chatId" element={<ChatWrapper chats={chats} />} />
-                <Route path="/profile" element={<Profile />} />
+                <Route path="/" element={isAuthenticated ? <ChatList /> : <Navigate to="/login" />} />
+                <Route path="/chat/:chatId" element={isAuthenticated ? <ChatWrapper /> : <Navigate to="/login" />} />
+                <Route path="/profile" element={isAuthenticated ? <Profile /> : <Navigate to="/login" />} />
+                <Route path="/login" element={isAuthenticated ? <Navigate to="/" /> : <Login />} />
+                <Route path="/register" element={isAuthenticated ? <Navigate to="/" /> : <Register />} />
                 <Route path="*" element={<Navigate to="/" />} />
             </Routes>
         </AppContext.Provider>
     );
 }
 
-function ChatWrapper({ chats }) {
+function ChatWrapper() {
     const { chatId } = useParams();
-    const parsedChatId = parseInt(chatId, 10);
-
-    if (isNaN(parsedChatId)) {
-        return <Navigate to="/" replace />;
-    }
-
-    const chat = chats.find(c => c.id === parsedChatId);
-
-    if (!chat) {
-        return <Navigate to="/" replace />;
-    }
-
-    return <Chat chatId={parsedChatId} />;
+    return <Chat chatId={chatId} />;
 }
-
-export default App;

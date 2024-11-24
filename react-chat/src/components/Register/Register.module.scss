@@ -1,0 +1,31 @@
+.registerContainer {
+  padding: 20px;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+}
+
+.avatarUpload {
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+.buttonContainer {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
+.registerButton {
+  flex-grow: 1;
+  margin-right: 10px;
+}
+
+.backButton {
+  flex-grow: 1;
+  margin-left: 10px;
+}

@@ -1,32 +1,20 @@
-import React, { useContext, useState, useEffect } from 'react';
-import styles from './Profile.module.scss';
-import { TextField, Button, IconButton, Avatar } from '@mui/material';
-import { ArrowBack } from '@mui/icons-material';
+import React, { useState, useContext } from 'react';
+import { TextField, Button } from '@mui/material';
 import { AppContext } from '../../context/AppContext';
 import { useNavigate } from 'react-router-dom';
+import styles from './Register.module.scss';
 import { Api } from '../../api';
 
-export const Profile = () => {
-    const { profile, setProfile, handleLogout } = useContext(AppContext);
+export const Register = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
     const [bio, setBio] = useState('');
     const [avatar, setAvatar] = useState(null);
-    const [errors, setErrors] = useState({});
-    const [isInitialized, setIsInitialized] = useState(false);
+    const { handleLogin } = useContext(AppContext);
     const navigate = useNavigate();
-
-    useEffect(() => {
-        if (profile && !isInitialized) {
-            setUsername(profile.username || '');
-            setFirstName(profile.first_name || '');
-            setLastName(profile.last_name || '');
-            setBio(profile.bio || '');
-            setIsInitialized(true);
-        }
-    }, [profile, isInitialized]);
+    const [errors, setErrors] = useState({});
 
     const handleAvatarChange = (e) => {
         setAvatar(e.target.files[0]);
@@ -34,71 +22,48 @@ export const Profile = () => {
 
     const validate = () => {
         const newErrors = {};
-        if (!username.trim()) {
-            newErrors.username = 'Логин обязателен';
-        }
-        if (!firstName.trim()) {
-            newErrors.firstName = 'Имя обязательно';
-        }
-        if (!lastName.trim()) {
-            newErrors.lastName = 'Фамилия обязательна';
-        }
+        if (!username.trim()) newErrors.username = 'Логин обязателен';
+        if (!password.trim()) newErrors.password = 'Пароль обязателен';
+        if (!firstName.trim()) newErrors.firstName = 'Имя обязательно';
+        if (!lastName.trim()) newErrors.lastName = 'Фамилия обязательна';
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        if (validate()) {
-            const userData = {
-                username: username.trim(),
-                first_name: firstName.trim(),
-                last_name: lastName.trim(),
-                bio: bio.trim(),
-            };
-            if (password) {
-                userData.password = password;
-            }
-            if (avatar) {
-                userData.avatar = avatar;
-            }
 
-            try {
-                const updatedProfile = await Api.updateUser(profile.id, userData);
-                setProfile(updatedProfile);
-                navigate('/');
-            } catch (error) {
-                console.error('Ошибка при обновлении профиля:', error);
-                alert(`Ошибка при обновлении профиля: ${JSON.stringify(error)}`);
-            }
+        if (!validate()) {
+            return;
+        }
+
+        const userData = {
+            username: username.trim(),
+            password: password.trim(),
+            first_name: firstName.trim(),
+            last_name: lastName.trim(),
+            bio: bio.trim(),
+            avatar: avatar,
+        };
+        
+        try {
+            await Api.register(userData);
+            const loginData = await Api.login(username.trim(), password.trim());
+            handleLogin(loginData.access, loginData.refresh);
+        } catch (error) {
+            console.error('Ошибка при регистрации:', error);
+            alert(`Ошибка регистрации: ${error.message}`);
         }
     };
 
-    const handleGoBack = () => {
-        navigate(-1);
-    };
-
-    const handleLogoutClick = () => {
-        handleLogout();
+    const handleBackToLogin = () => {
+        navigate('/login');
     };
 
     return (
-        <div className={styles.profileContainer}>
-            <header className={styles.header}>
-                <IconButton className={styles.backButton} onClick={handleGoBack}>
-                    <ArrowBack />
-                </IconButton>
-                <h1 className={styles.profileTitle}>Мой профиль</h1>
-            </header>
+        <div className={styles.registerContainer}>
+            <h1>Регистрация</h1>
             <form className={styles.form} onSubmit={handleSubmit}>
-                <div className={styles.avatarContainer}>
-                    <Avatar
-                        src={profile.avatar}
-                        sx={{ width: 100, height: 100, fontSize: 48 }}
-                    >
-                        {!profile.avatar && profile.first_name.charAt(0)}
-                    </Avatar>
-                </div>
                 <TextField
                     label="Логин"
                     variant="outlined"
@@ -106,17 +71,21 @@ export const Profile = () => {
                     margin="normal"
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
+                    required
                     error={!!errors.username}
                     helperText={errors.username}
                 />
                 <TextField
-                    label="Новый пароль"
+                    label="Пароль"
                     variant="outlined"
                     type="password"
                     fullWidth
                     margin="normal"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
+                    required
+                    error={!!errors.password}
+                    helperText={errors.password}
                 />
                 <TextField
                     label="Имя"
@@ -125,6 +94,7 @@ export const Profile = () => {
                     margin="normal"
                     value={firstName}
                     onChange={(e) => setFirstName(e.target.value)}
+                    required
                     error={!!errors.firstName}
                     helperText={errors.firstName}
                 />
@@ -135,6 +105,7 @@ export const Profile = () => {
                     margin="normal"
                     value={lastName}
                     onChange={(e) => setLastName(e.target.value)}
+                    required
                     error={!!errors.lastName}
                     helperText={errors.lastName}
                 />
@@ -163,23 +134,25 @@ export const Profile = () => {
                         {avatar && <span style={{ marginLeft: '10px' }}>{avatar.name}</span>}
                     </label>
                 </div>
-                <Button
-                    type="submit"
-                    variant="contained"
-                    color="primary"
-                    className={styles.saveButton}
-                >
-                    Сохранить
-                </Button>
+                <div className={styles.buttonContainer}>
+                    <Button
+                        type="submit"
+                        variant="contained"
+                        color="primary"
+                        className={styles.registerButton}
+                    >
+                        Зарегистрироваться
+                    </Button>
+                    <Button
+                        variant="text"
+                        color="primary"
+                        onClick={handleBackToLogin}
+                        className={styles.backButton}
+                    >
+                        Назад
+                    </Button>
+                </div>
             </form>
-            <Button
-                variant="contained"
-                color="error"
-                onClick={handleLogoutClick}
-                className={styles.logoutButton}
-            >
-                Выйти из аккаунта
-            </Button>
         </div>
     );
 }

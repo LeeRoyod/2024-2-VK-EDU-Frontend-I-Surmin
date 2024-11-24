@@ -1,7 +1,7 @@
 import React from 'react';
 import styles from './TypingIndicator.module.scss';
 
-function TypingIndicator() {
+export const TypingIndicator = () => {
     return (
         <div className={styles.typingIndicator}>
             <div className={styles.dot}></div>
@@ -10,5 +10,3 @@ function TypingIndicator() {
         </div>
     );
 }
-
-export default TypingIndicator;
