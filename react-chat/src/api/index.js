@@ -150,10 +150,10 @@ export const Api = (() => {
         return allMessages;
     };
 
-    const sendMessage = async (messageData) => {
+    const sendMessage = async (messageData, isFormData = false) => {
         return request('/messages/', {
             method: 'POST',
-            body: JSON.stringify(messageData),
+            body: isFormData ? messageData : JSON.stringify(messageData),
         });
     };
 
