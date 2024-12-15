@@ -110,9 +110,6 @@ export const ChatList = () => {
 
     const handleCreateChatClose = () => {
         setOpenCreateChatDialog(false);
-        setChatTitle('');
-        setSelectedUserIds([]);
-        setUserSearchTerm('');
     };
 
     const handleCreateChatConfirm = () => {
@@ -125,7 +122,7 @@ export const ChatList = () => {
             return;
         }
         addNewChat(chatTitle, selectedUserIds);
-        handleCreateChatClose();
+        setOpenCreateChatDialog(false);
     };
 
     const handleUserToggle = (userId) => {
@@ -146,6 +143,12 @@ export const ChatList = () => {
             return fullName.toLowerCase().includes(userSearchTerm.toLowerCase());
         })
         .filter((user) => user.id !== profile.id);
+
+    const handleCreateChatDialogExited = () => {
+        setChatTitle('');
+        setSelectedUserIds([]);
+        setUserSearchTerm('');
+    };
 
     return (
         <div className={styles.form}>
@@ -197,6 +200,7 @@ export const ChatList = () => {
                 onClose={handleCreateChatClose}
                 maxWidth="sm"
                 fullWidth
+                onExited={handleCreateChatDialogExited}
             >
                 <DialogTitle>Создать новый чат</DialogTitle>
                 <DialogContent>

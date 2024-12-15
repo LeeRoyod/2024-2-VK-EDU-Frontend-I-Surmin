@@ -7,7 +7,7 @@ import { Login } from './components/Login/Login';
 import { Register } from './components/Register/Register';
 import { AppContext } from './context/AppContext';
 import { Api } from './api';
-import { Centrifuge } from 'centrifuge';
+import { CentrifugeApi } from './api/centrifuge';
 import notificationSound from './assets/notification.mp3';
 import {debugLog} from "./utils/logger";
 
@@ -18,8 +18,6 @@ export const App = () => {
     const [currentChatId, setCurrentChatId] = useState(null);
     const navigate = useNavigate();
     const [isProfileLoaded, setIsProfileLoaded] = useState(false);
-    const centrifugeRef = useRef(null);
-    const subscriptionRef = useRef(null);
     const audioRef = useRef(null);
 
     useEffect(() => {
@@ -35,15 +33,7 @@ export const App = () => {
         setProfile(null);
         setIsProfileLoaded(false);
         Api.setAccessToken(null);
-        if (centrifugeRef.current) {
-            centrifugeRef.current.disconnect();
-            centrifugeRef.current = null;
-        }
-        if (subscriptionRef.current) {
-            subscriptionRef.current.removeAllListeners();
-            subscriptionRef.current.unsubscribe();
-            subscriptionRef.current = null;
-        }
+        CentrifugeApi.disconnectFromCentrifuge();
         navigate('/login');
     }, [navigate]);
 
@@ -121,82 +111,7 @@ export const App = () => {
         }
 
         Api.getChats().then(allChats => setChats(allChats)).catch(error => console.error(error));
-    }, [currentChatId, triggerNotification, playSound, vibrateDevice, profile, setChats]);
-
-    useEffect(() => {
-        if (isAuthenticated && isProfileLoaded && profile) {
-            const connect = async () => {
-                const channel = profile.id;
-                try {
-                    const centrifuge = new Centrifuge('wss://vkedu-fullstack-div2.ru/connection/websocket/', {
-                        minReconnectDelay: 1000 * 60 * 50,
-                        getToken: (ctx) =>
-                            new Promise((resolve, reject) =>
-                                fetch('/api/centrifugo/connect/', {
-                                    method: 'POST',
-                                    headers: {
-                                        'Content-Type': 'application/json',
-                                        'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
-                                    },
-                                    body: JSON.stringify(ctx),
-                                })
-                                    .then(res => res.json())
-                                    .then(data => resolve(data.token))
-                                    .catch(err => reject(err))
-                            )
-                    });
-                    centrifugeRef.current = centrifuge;
-                    centrifuge.connect();
-
-                    const subscription = centrifuge.newSubscription(channel, {
-                        minResubscribeDelay: 1000 * 60 * 50,
-                        getToken: (ctx) =>
-                            new Promise((resolve, reject) =>
-                                fetch('/api/centrifugo/subscribe/', {
-                                    method: 'POST',
-                                    headers: {
-                                        'Content-Type': 'application/json',
-                                        'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
-                                    },
-                                    body: JSON.stringify(ctx),
-                                })
-                                    .then(res => res.json())
-                                    .then(data => resolve(data.token))
-                                    .catch(err => reject(err))
-                            )
-                    });
-
-                    const handleIncomingMessage = (ctx) => {
-                        const event = ctx.data.event;
-                        if (event === 'create' || event === 'update' || event === 'delete') {
-                            const message = ctx.data.message;
-                            handleIncomingMessageFunction(message);
-                        }
-                    };
-
-                    subscription.on('publication', handleIncomingMessage);
-                    subscription.subscribe();
-                    subscriptionRef.current = subscription;
-                } catch (error) {
-                    console.error('Ошибка при подключении к Centrifuge:', error);
-                }
-            };
-
-            connect();
-        }
-
-        return () => {
-            if (subscriptionRef.current) {
-                subscriptionRef.current.removeAllListeners();
-                subscriptionRef.current.unsubscribe();
-                subscriptionRef.current = null;
-            }
-            if (centrifugeRef.current) {
-                centrifugeRef.current.disconnect();
-                centrifugeRef.current = null;
-            }
-        };
-    }, [isAuthenticated, isProfileLoaded, profile, handleIncomingMessageFunction]);
+    }, [currentChatId, triggerNotification, playSound, vibrateDevice, profile]);
 
     const fetchChatsData = useCallback(async () => {
         try {
@@ -212,6 +127,16 @@ export const App = () => {
             fetchChatsData();
         }
     }, [isAuthenticated, fetchChatsData]);
+
+    useEffect(() => {
+        if (isAuthenticated && isProfileLoaded && profile) {
+            CentrifugeApi.connectToCentrifuge(profile.id, localStorage.getItem('accessToken'), handleIncomingMessageFunction);
+        }
+
+        return () => {
+            CentrifugeApi.disconnectFromCentrifuge();
+        };
+    }, [isAuthenticated, isProfileLoaded, profile, handleIncomingMessageFunction]);
 
     if (isAuthenticated === null || (isAuthenticated && !isProfileLoaded)) {
         return <div>Загрузка...</div>;

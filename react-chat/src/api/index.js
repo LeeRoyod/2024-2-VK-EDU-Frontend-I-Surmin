@@ -150,11 +150,17 @@ export const Api = (() => {
         return allMessages;
     };
 
-    const sendMessage = async (messageData, isFormData = false) => {
-        return request('/messages/', {
+    const sendMessage = async (messageData) => {
+        let options = {
             method: 'POST',
-            body: isFormData ? messageData : JSON.stringify(messageData),
-        });
+        };
+        if (messageData instanceof FormData) {
+            options.body = messageData;
+        } else {
+            options.body = JSON.stringify(messageData);
+        }
+
+        return request('/messages/', options);
     };
 
     const deleteMessage = async (messageId) => {
