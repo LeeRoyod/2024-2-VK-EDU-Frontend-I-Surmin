@@ -22,9 +22,14 @@ export const ChatItem = ({ chat, openChat, deleteChat }) => {
         deleteChat(chat.id);
     };
 
-    const lastMessageText = chat.last_message && chat.last_message.text
-        ? chat.last_message.text
-        : 'Нет сообщений';
+    let lastMessageText = 'Нет сообщений';
+    if (chat.last_message) {
+        if (chat.last_message.text && chat.last_message.text.trim() !== '') {
+            lastMessageText = chat.last_message.text;
+        } else if (chat.last_message.files && chat.last_message.files.length > 0) {
+            lastMessageText = chat.last_message.files.length === 1 ? 'Изображение' : 'Изображения';
+        }
+    }
 
     const lastMessageTime = chat.last_message && chat.last_message.created_at
         ? new Date(chat.last_message.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })

@@ -2,11 +2,15 @@ import React, { useState } from 'react';
 import styles from './MessageItem.module.scss';
 import { Typography, Avatar, IconButton, TextField } from '@mui/material';
 import { Edit, Delete, Save, Close } from '@mui/icons-material';
+import Modal from 'react-modal';
+Modal.setAppElement('#root');
 
 export const MessageItem = ({ message, isMyMessage, isNew, onDeleteMessage, onEditMessage }) => {
-    const { text, sender, created_at } = message;
+    const { text, sender, created_at, files, voice } = message;
     const [isEditing, setIsEditing] = useState(false);
-    const [editedText, setEditedText] = useState(text);
+    const [editedText, setEditedText] = useState(text || '');
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [currentImage, setCurrentImage] = useState(null);
 
     const messageClass = [styles.message];
     if (isMyMessage) {
@@ -24,7 +28,7 @@ export const MessageItem = ({ message, isMyMessage, isNew, onDeleteMessage, onEd
 
     const handleEditToggle = () => {
         setIsEditing(!isEditing);
-        setEditedText(text);
+        setEditedText(text || '');
     };
 
     const handleEditSave = () => {
@@ -34,6 +38,16 @@ export const MessageItem = ({ message, isMyMessage, isNew, onDeleteMessage, onEd
         }
         onEditMessage(message.id, editedText);
         setIsEditing(false);
+    };
+
+    const openModal = (imageSrc) => {
+        setCurrentImage(imageSrc);
+        setIsModalOpen(true);
+    };
+
+    const closeModal = () => {
+        setIsModalOpen(false);
+        setCurrentImage(null);
     };
 
     return (
@@ -65,6 +79,27 @@ export const MessageItem = ({ message, isMyMessage, isNew, onDeleteMessage, onEd
                                 <Typography variant="body1" component="span">
                                     {text}
                                 </Typography>
+                                {files && files.length > 0 && (
+                                    <div className={styles.imagesContainer}>
+                                        {files.map((file, index) => (
+                                            <img
+                                                key={index}
+                                                src={file.item}
+                                                alt={`file-${index}`}
+                                                className={styles.messageImage}
+                                                onClick={() => openModal(file.item)}
+                                            />
+                                        ))}
+                                    </div>
+                                )}
+                                {voice && (
+                                    <div className={styles.voiceContainer}>
+                                        <audio controls>
+                                            <source src={voice} type="audio/ogg" />
+                                            Ваш браузер не поддерживает элемент audio.
+                                        </audio>
+                                    </div>
+                                )}
                                 <div className={styles.messageInfo}>
                                     <Typography component="span" className={styles.nicknameTime}>
                                         {sender.first_name} {sender.last_name}, {messageTime}
@@ -91,6 +126,27 @@ export const MessageItem = ({ message, isMyMessage, isNew, onDeleteMessage, onEd
                         <Typography variant="body1" component="span">
                             {text}
                         </Typography>
+                        {files && files.length > 0 && (
+                            <div className={styles.imagesContainer}>
+                                {files.map((file, index) => (
+                                    <img
+                                        key={index}
+                                        src={file.item}
+                                        alt={`file-${index}`}
+                                        className={styles.messageImage}
+                                        onClick={() => openModal(file.item)}
+                                    />
+                                ))}
+                            </div>
+                        )}
+                        {voice && (
+                            <div className={styles.voiceContainer}>
+                                <audio controls>
+                                    <source src={voice} type="audio/ogg" />
+                                    Ваш браузер не поддерживает элемент audio.
+                                </audio>
+                            </div>
+                        )}
                         <div className={styles.messageInfo}>
                             <Typography component="span" className={styles.nicknameTime}>
                                 {sender.first_name} {sender.last_name}, {messageTime}
@@ -102,6 +158,16 @@ export const MessageItem = ({ message, isMyMessage, isNew, onDeleteMessage, onEd
                     </Avatar>
                 </>
             )}
+            <Modal
+                isOpen={isModalOpen}
+                onRequestClose={closeModal}
+                contentLabel="Просмотр изображения"
+                className={styles.modal}
+                overlayClassName={styles.overlay}
+            >
+                <button onClick={closeModal} className={styles.closeButton}>×</button>
+                {currentImage && <img src={currentImage} alt="Просмотр" className={styles.fullImage} />}
+            </Modal>
         </li>
     );
-}
+};

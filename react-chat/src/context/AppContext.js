@@ -8,4 +8,6 @@ export const AppContext = React.createContext({
     setChats: () => {},
     handleLogin: () => {},
     handleLogout: () => {},
+    currentChatId: null,
+    setCurrentChatId: () => {},
 });

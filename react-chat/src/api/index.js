@@ -151,10 +151,16 @@ export const Api = (() => {
     };
 
     const sendMessage = async (messageData) => {
-        return request('/messages/', {
+        let options = {
             method: 'POST',
-            body: JSON.stringify(messageData),
-        });
+        };
+        if (messageData instanceof FormData) {
+            options.body = messageData;
+        } else {
+            options.body = JSON.stringify(messageData);
+        }
+
+        return request('/messages/', options);
     };
 
     const deleteMessage = async (messageId) => {

@@ -52,31 +52,93 @@
 }
 
 .inputContainer {
-  position: relative;
   display: flex;
   align-items: center;
+  position: relative;
+  padding: 0 10px;
 }
 
 .attachIcon {
-  position: absolute;
-  left: 12px;
+  margin-right: 10px;
 }
 
 .formInput {
   flex-grow: 1;
-  padding-left: 40px !important;
-  padding-right: 40px !important;
+  margin-right: 10px;
 }
 
 .sendButton {
-  position: absolute;
-  right: 12px;
+  margin-right: 10px;
 }
 
-.typingIndicator {
+.micButton {
+  transition: color 0.3s ease, transform 0.3s ease;
+
+  &:hover {
+    transform: scale(1.1);
+  }
+
+  &:active {
+    transform: scale(0.95);
+  }
+}
+
+.selectedFiles {
+  display: flex;
+  flex-wrap: wrap;
+  margin-top: 10px;
+}
+
+.fileItem {
   display: flex;
   align-items: center;
-  padding: 10px;
-  align-self: flex-end;
-  margin-right: 25px;
+  background-color: #e0e0e0;
+  border-radius: 12px;
+  padding: 5px 10px;
+  margin-right: 10px;
+  margin-bottom: 5px;
+  width: 100px;
+
+  .MuiIconButton-root {
+    margin-left: 5px;
+    padding: 2px;
+  }
+
+  .previewImage {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 8px;
+  }
+}
+
+@media (max-width: 600px) {
+  .header {
+    padding: 0 10px;
+  }
+
+  .chatTitle {
+    font-size: 18px;
+  }
+
+  .formInput {
+    margin-right: 70px;
+  }
+
+  .selectedFiles {
+    .fileItem {
+      width: 80px;
+
+      .previewImage {
+        width: 60px;
+        height: 60px;
+      }
+    }
+  }
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); }
 }
