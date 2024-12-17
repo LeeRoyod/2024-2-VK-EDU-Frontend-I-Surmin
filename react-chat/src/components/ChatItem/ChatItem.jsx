@@ -1,11 +1,11 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import styles from './ChatItem.module.scss';
-import { AppContext } from '../../context/AppContext';
 import { Avatar, IconButton } from '@mui/material';
 import { Delete } from '@mui/icons-material';
+import { useSelector } from 'react-redux';
 
 export const ChatItem = ({ chat, openChat, deleteChat }) => {
-    const { profile } = useContext(AppContext);
+    const { profile } = useSelector(state => state.auth);
 
     if (!profile) {
         return <div>Загрузка...</div>;

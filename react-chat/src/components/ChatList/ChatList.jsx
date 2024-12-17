@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import styles from './ChatList.module.scss';
 import { ChatItem } from '../ChatItem/ChatItem';
 import {
@@ -18,13 +18,16 @@ import {
     Checkbox,
 } from '@mui/material';
 import { Edit, Menu as MenuIcon } from '@mui/icons-material';
-import { AppContext } from '../../context/AppContext';
+import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { Api } from '../../api';
+import { setChats } from '../../slices/chatsSlice';
 
 export const ChatList = () => {
     const [searchTerm, setSearchTerm] = useState('');
-    const { chats, setChats, profile } = useContext(AppContext);
+    const { chats } = useSelector(state => state.chats);
+    const { profile } = useSelector(state => state.auth);
+    const dispatch = useDispatch();
     const navigate = useNavigate();
     const [users, setUsers] = useState([]);
     const [anchorEl, setAnchorEl] = useState(null);
@@ -37,11 +40,11 @@ export const ChatList = () => {
     const fetchChatsData = useCallback(async () => {
         try {
             const allChats = await Api.getChats(100);
-            setChats(allChats);
+            dispatch(setChats(allChats));
         } catch (error) {
             console.error('Ошибка при получении чатов:', error);
         }
-    }, [setChats]);
+    }, [dispatch]);
 
     const fetchUsersData = useCallback(async () => {
         try {
@@ -76,7 +79,7 @@ export const ChatList = () => {
         if (!confirmed) return;
         try {
             await Api.deleteChat(chatId);
-            setChats(chats.filter((chat) => chat.id !== chatId));
+            dispatch(setChats(chats.filter((chat) => chat.id !== chatId)));
         } catch (error) {
             console.error('Ошибка при удалении чата:', error);
             alert(`Ошибка при удалении чата: ${error.message}`);
@@ -142,7 +145,7 @@ export const ChatList = () => {
             const fullName = `${user.first_name} ${user.last_name} ${user.username}`;
             return fullName.toLowerCase().includes(userSearchTerm.toLowerCase());
         })
-        .filter((user) => user.id !== profile.id);
+        .filter((user) => user.id !== profile?.id);
 
     const handleCreateChatDialogExited = () => {
         setChatTitle('');

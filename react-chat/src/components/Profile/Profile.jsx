@@ -1,13 +1,15 @@
-import React, { useContext, useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import styles from './Profile.module.scss';
 import { TextField, Button, IconButton, Avatar } from '@mui/material';
 import { ArrowBack } from '@mui/icons-material';
-import { AppContext } from '../../context/AppContext';
+import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { Api } from '../../api';
+import { handleLogout, setProfile } from '../../slices/authSlice';
 
 export const Profile = () => {
-    const { profile, setProfile, handleLogout } = useContext(AppContext);
+    const dispatch = useDispatch();
+    const { profile } = useSelector(state => state.auth);
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [firstName, setFirstName] = useState('');
@@ -65,7 +67,7 @@ export const Profile = () => {
 
             try {
                 const updatedProfile = await Api.updateUser(profile.id, userData);
-                setProfile(updatedProfile);
+                dispatch(setProfile(updatedProfile));
                 navigate('/');
             } catch (error) {
                 console.error('Ошибка при обновлении профиля:', error);
@@ -79,7 +81,8 @@ export const Profile = () => {
     };
 
     const handleLogoutClick = () => {
-        handleLogout();
+        dispatch(handleLogout());
+        navigate('/login');
     };
 
     return (
@@ -93,10 +96,10 @@ export const Profile = () => {
             <form className={styles.form} onSubmit={handleSubmit}>
                 <div className={styles.avatarContainer}>
                     <Avatar
-                        src={profile.avatar}
+                        src={profile?.avatar}
                         sx={{ width: 100, height: 100, fontSize: 48 }}
                     >
-                        {!profile.avatar && profile.first_name.charAt(0)}
+                        {(!profile?.avatar && profile?.first_name) ? profile.first_name.charAt(0) : ''}
                     </Avatar>
                 </div>
                 <TextField
