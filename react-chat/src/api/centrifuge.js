@@ -46,7 +46,7 @@ export const CentrifugeApi = {
 
         const handleIncomingMessage = (ctx) => {
             const event = ctx.data.event;
-            if (event === 'create' || event === 'update' || event === 'delete') {
+            if (['create', 'update', 'delete', 'read', 'read_all'].includes(event)) {
                 const message = ctx.data.message;
                 handleIncomingMessageFunction(message);
             }

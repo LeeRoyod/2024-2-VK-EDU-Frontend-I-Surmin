@@ -84,6 +84,13 @@ export const Api = (() => {
         });
     };
 
+    const refreshToken = async (refresh) => {
+        return request('/auth/refresh/', {
+            method: 'POST',
+            body: JSON.stringify({ refresh }),
+        });
+    };
+
     const getCurrentUser = async () => {
         return request('/user/current/', { method: 'GET' });
     };
@@ -99,6 +106,17 @@ export const Api = (() => {
             method: 'PATCH',
             body: formData,
         });
+    };
+
+    const setUserOnline = async () => {
+        const headers = {
+            'Authorization': `Bearer ${accessToken}`,
+        };
+        const url = `${API_URL}/user/online/`;
+        const res = await fetch(url, { method: 'HEAD', headers });
+        if (!res.ok) {
+            throw new Error(`Ошибка установки онлайн статуса: ${res.status}`);
+        }
     };
 
     // CHATS
@@ -174,6 +192,16 @@ export const Api = (() => {
         });
     };
 
+    const readMessage = async (messageId) => {
+        return request(`/message/${messageId}/read/`, { method: 'POST' });
+    };
+
+    const readAllMessages = async (chatId) => {
+        return request(`/messages/read_all/?chat=${chatId}`, {
+            method: 'POST'
+        });
+    };
+
     // USERS
     const getUsers = async (pageSize = 100) => {
         let allUsers = [];
@@ -195,8 +223,10 @@ export const Api = (() => {
         setAccessToken,
         login,
         register,
+        refreshToken,
         getCurrentUser,
         updateUser,
+        setUserOnline,
         getChats,
         getChat,
         createChat,
@@ -205,6 +235,8 @@ export const Api = (() => {
         sendMessage,
         deleteMessage,
         editMessage,
+        readMessage,
+        readAllMessages,
         getUsers,
     };
 })();

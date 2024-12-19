@@ -26,6 +26,7 @@ export const App = () => {
             Api.setAccessToken(token);
             const userData = await Api.getCurrentUser();
             dispatch(setProfile(userData));
+            await Api.setUserOnline();
         } catch (error) {
             console.error('Ошибка при получении профиля:', error);
             dispatch(handleLogout());
@@ -68,7 +69,7 @@ export const App = () => {
         if (Notification.permission === 'granted') {
             const notification = new Notification(`Новое сообщение в чате "${getChatTitle(message.chat)}"`, {
                 body: message.text || 'Без текста',
-                icon: message.sender.avatar || '/default-avatar.png',
+                icon: message.sender?.avatar || '/default-avatar.png',
             });
 
             notification.onclick = () => {
@@ -78,11 +79,16 @@ export const App = () => {
         }
     }, [navigate, getChatTitle]);
 
-    const handleIncomingMessageFunction = useCallback((message) => {
-        const messageChatId = message.chat;
-        debugLog('Получено сообщение:', message);
+    const handleIncomingMessageFunction = useCallback((message, event) => {
+        debugLog('Получено сообщение:', message, 'Событие:', event);
 
-        if (currentChatId !== messageChatId && message.sender.id !== profile?.id) {
+        if (event === 'read_all' || event === 'read') {
+            Api.getChats().then(allChats => dispatch(setChats(allChats))).catch(error => console.error(error));
+            return;
+        }
+
+        const messageChatId = message.chat;
+        if (message.sender && currentChatId !== messageChatId && message.sender.id !== profile?.id) {
             triggerNotification(message);
             playSound();
             vibrateDevice();

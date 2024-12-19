@@ -43,6 +43,7 @@ export const Chat = ({ chatId }) => {
         try {
             const allMessages = await Api.getMessages(chatId, 50);
             setMessages(allMessages.reverse());
+            await Api.readAllMessages(chatId);
         } catch (error) {
             console.error('Ошибка при получении сообщений:', error);
         }

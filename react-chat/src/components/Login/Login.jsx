@@ -28,8 +28,9 @@ export const Login = () => {
     };
 
     return (
-        <div className={styles.loginContainer}>
-            <h1>Вход</h1>
+        <div className={styles.authContainer}>
+            <h1 className={styles.title}>Мессенджер</h1>
+            <h2 className={styles.subtitle}>Вход</h2>
             <form className={styles.form} onSubmit={handleSubmit}>
                 <TextField
                     label="Логин"
