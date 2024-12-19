@@ -10,6 +10,10 @@
   align-self: flex-end;
 }
 
+.unread {
+  background-color: #fff9e6;
+}
+
 .messageContent {
   background-color: #e8e8e8;
   border-radius: 16px;
@@ -64,6 +68,12 @@
 
 .messageActions .MuiIconButton-root {
   padding: 4px;
+}
+
+.readStatus {
+  font-size: 14px;
+  color: #4caf50;
+  margin-right: 8px;
 }
 
 .imagesContainer {

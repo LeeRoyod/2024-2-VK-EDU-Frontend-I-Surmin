@@ -1,20 +1,21 @@
-import React, { useState, useEffect, useContext, useRef, useLayoutEffect, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useLayoutEffect, useCallback } from 'react';
 import styles from './Chat.module.scss';
 import { MessageList } from '../MessageList/MessageList';
 import { TypingIndicator } from '../TypingIndicator/TypingIndicator';
 import { IconButton, TextField } from '@mui/material';
 import { ArrowBack, Image as ImageIcon, Send, Mic, Stop, LocationOn } from '@mui/icons-material';
 import CloseIcon from '@mui/icons-material/Close';
-import { AppContext } from '../../context/AppContext';
+import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { Api } from '../../api';
 import { debugLog } from '../../utils/logger';
 
 export const Chat = ({ chatId }) => {
+    const { profile } = useSelector(state => state.auth);
+    const { chats } = useSelector(state => state.chats);
     const [chat, setChat] = useState(null);
     const [messages, setMessages] = useState([]);
     const [inputText, setInputText] = useState('');
-    const { profile, chats } = useContext(AppContext);
     const messageListRef = useRef(null);
     const [isTyping, setIsTyping] = useState(false);
     const typingTimeoutRef = useRef(null);
@@ -42,6 +43,7 @@ export const Chat = ({ chatId }) => {
         try {
             const allMessages = await Api.getMessages(chatId, 50);
             setMessages(allMessages.reverse());
+            await Api.readAllMessages(chatId);
         } catch (error) {
             console.error('Ошибка при получении сообщений:', error);
         }
@@ -423,4 +425,4 @@ export const Chat = ({ chatId }) => {
             </form>
         </div>
     );
-};
+}

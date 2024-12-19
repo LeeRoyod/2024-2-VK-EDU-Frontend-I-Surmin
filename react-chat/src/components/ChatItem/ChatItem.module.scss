@@ -31,6 +31,16 @@
   font-size: 16px;
   font-weight: bold;
   color: #333;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.onlineIndicator {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
 }
 
 .chatLastMessageContainer {
