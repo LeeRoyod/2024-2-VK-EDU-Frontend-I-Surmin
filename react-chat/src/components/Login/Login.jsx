@@ -1,21 +1,22 @@
-import React, { useState, useContext } from 'react';
+import React, { useState } from 'react';
 import { TextField, Button } from '@mui/material';
-import { AppContext } from '../../context/AppContext';
+import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import styles from './Login.module.scss';
 import { Api } from '../../api';
+import { handleLogin } from '../../slices/authSlice';
 
 export const Login = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
-    const {handleLogin} = useContext(AppContext);
+    const dispatch = useDispatch();
     const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
             const data = await Api.login(username, password);
-            handleLogin(data.access, data.refresh);
+            dispatch(handleLogin(data.access, data.refresh));
         } catch (error) {
             console.error('Ошибка авторизации:', error);
             alert('Неправильный логин или пароль');
