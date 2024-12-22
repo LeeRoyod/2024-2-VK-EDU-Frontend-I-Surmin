@@ -1,24 +1,36 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useEffect, useCallback, useRef } from 'react';
 import { Routes, Route, Navigate, useParams, useNavigate } from 'react-router-dom';
 import { ChatList } from './components/ChatList/ChatList';
 import { Chat } from './components/Chat/Chat';
 import { Profile } from './components/Profile/Profile';
 import { Login } from './components/Login/Login';
 import { Register } from './components/Register/Register';
-import { AppContext } from './context/AppContext';
 import { Api } from './api';
 import { CentrifugeApi } from './api/centrifuge';
 import notificationSound from './assets/notification.mp3';
-import {debugLog} from "./utils/logger";
+import { debugLog } from "./utils/logger";
+import { useDispatch, useSelector } from 'react-redux';
+import { handleLogout, handleLogin, setProfile } from './slices/authSlice';
+import { setChats, setCurrentChatId } from './slices/chatsSlice';
 
 export const App = () => {
-    const [isAuthenticated, setIsAuthenticated] = useState(null);
-    const [profile, setProfile] = useState(null);
-    const [chats, setChats] = useState([]);
-    const [currentChatId, setCurrentChatId] = useState(null);
+    const dispatch = useDispatch();
     const navigate = useNavigate();
-    const [isProfileLoaded, setIsProfileLoaded] = useState(false);
+    const { isAuthenticated, profile, isProfileLoaded, accessToken } = useSelector(state => state.auth);
+    const { chats, currentChatId } = useSelector(state => state.chats);
+
     const audioRef = useRef(null);
+
+    const fetchProfileData = useCallback(async (token) => {
+        try {
+            Api.setAccessToken(token);
+            const userData = await Api.getCurrentUser();
+            dispatch(setProfile(userData));
+        } catch (error) {
+            console.error('Ошибка при получении профиля:', error);
+            dispatch(handleLogout());
+        }
+    }, [dispatch]);
 
     useEffect(() => {
         if (Notification.permission !== 'granted') {
@@ -26,48 +38,14 @@ export const App = () => {
         }
     }, []);
 
-    const handleLogout = useCallback(() => {
-        localStorage.removeItem('accessToken');
-        localStorage.removeItem('refreshToken');
-        setIsAuthenticated(false);
-        setProfile(null);
-        setIsProfileLoaded(false);
-        Api.setAccessToken(null);
-        CentrifugeApi.disconnectFromCentrifuge();
-        navigate('/login');
-    }, [navigate]);
-
-    const fetchProfileData = useCallback(async (token) => {
-        try {
-            Api.setAccessToken(token);
-            const userData = await Api.getCurrentUser();
-            setProfile(userData);
-            setIsProfileLoaded(true);
-        } catch (error) {
-            console.error('Ошибка при получении профиля:', error);
-            handleLogout();
-        }
-    }, [handleLogout]);
-
-    const handleLogin = useCallback((access, refresh) => {
-        localStorage.setItem('accessToken', access);
-        localStorage.setItem('refreshToken', refresh);
-        setIsAuthenticated(true);
-        fetchProfileData(access);
-        navigate('/');
-    }, [fetchProfileData, navigate]);
-
     useEffect(() => {
         const storedAccessToken = localStorage.getItem('accessToken');
         const storedRefreshToken = localStorage.getItem('refreshToken');
 
         if (storedAccessToken && storedRefreshToken) {
-            setIsAuthenticated(true);
-            fetchProfileData(storedAccessToken);
-        } else {
-            setIsAuthenticated(false);
+            dispatch(handleLogin(storedAccessToken, storedRefreshToken));
         }
-    }, [fetchProfileData]);
+    }, [dispatch]);
 
     const getChatTitle = useCallback((chatId) => {
         const chat = chats.find(c => c.id === chatId);
@@ -110,50 +88,42 @@ export const App = () => {
             vibrateDevice();
         }
 
-        Api.getChats().then(allChats => setChats(allChats)).catch(error => console.error(error));
-    }, [currentChatId, triggerNotification, playSound, vibrateDevice, profile]);
+        Api.getChats().then(allChats => dispatch(setChats(allChats))).catch(error => console.error(error));
+    }, [currentChatId, profile, triggerNotification, playSound, vibrateDevice, dispatch]);
 
     const fetchChatsData = useCallback(async () => {
         try {
             const allChats = await Api.getChats(100);
-            setChats(allChats);
+            dispatch(setChats(allChats));
         } catch (error) {
             console.error('Ошибка при получении чатов:', error);
         }
-    }, []);
+    }, [dispatch]);
 
     useEffect(() => {
-        if (isAuthenticated) {
-            fetchChatsData();
+        if (isAuthenticated && accessToken) {
+            fetchProfileData(accessToken).then(() => {
+                fetchChatsData();
+            });
         }
-    }, [isAuthenticated, fetchChatsData]);
+    }, [isAuthenticated, accessToken, fetchProfileData, fetchChatsData]);
 
     useEffect(() => {
         if (isAuthenticated && isProfileLoaded && profile) {
-            CentrifugeApi.connectToCentrifuge(profile.id, localStorage.getItem('accessToken'), handleIncomingMessageFunction);
+            CentrifugeApi.connectToCentrifuge(profile.id, accessToken, handleIncomingMessageFunction);
         }
 
         return () => {
             CentrifugeApi.disconnectFromCentrifuge();
         };
-    }, [isAuthenticated, isProfileLoaded, profile, handleIncomingMessageFunction]);
+    }, [isAuthenticated, isProfileLoaded, profile, accessToken, handleIncomingMessageFunction]);
 
-    if (isAuthenticated === null || (isAuthenticated && !isProfileLoaded)) {
+    if (isAuthenticated && !isProfileLoaded) {
         return <div>Загрузка...</div>;
     }
 
     return (
-        <AppContext.Provider value={{
-            isAuthenticated,
-            profile,
-            setProfile,
-            chats,
-            setChats,
-            handleLogin,
-            handleLogout,
-            currentChatId,
-            setCurrentChatId,
-        }}>
+        <>
             <audio ref={audioRef} src={notificationSound} />
             <Routes>
                 <Route path="/" element={isAuthenticated ? <ChatList /> : <Navigate to="/login" />} />
@@ -163,18 +133,18 @@ export const App = () => {
                 <Route path="/register" element={isAuthenticated ? <Navigate to="/" /> : <Register />} />
                 <Route path="*" element={<Navigate to="/" />} />
             </Routes>
-        </AppContext.Provider>
+        </>
     );
 }
 
 function ChatWrapper() {
     const { chatId } = useParams();
-    const { setCurrentChatId } = React.useContext(AppContext);
+    const dispatch = useDispatch();
 
     useEffect(() => {
-        setCurrentChatId(chatId);
-        return () => setCurrentChatId(null);
-    }, [chatId, setCurrentChatId]);
+        dispatch(setCurrentChatId(chatId));
+        return () => dispatch(setCurrentChatId(null));
+    }, [chatId, dispatch]);
 
     return <Chat chatId={chatId} />;
 }

@@ -1,10 +1,10 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import styles from './MessageList.module.scss';
 import { MessageItem } from '../MessageItem/MessageItem';
-import { AppContext } from '../../context/AppContext';
+import { useSelector } from 'react-redux';
 
 export const MessageList = ({ messages, messageListRef, lastSentMessageId, onDeleteMessage, onEditMessage }) => {
-    const { profile } = useContext(AppContext);
+    const { profile } = useSelector(state => state.auth);
 
     const messageItems = messages.map((message) => {
         const isMyMessage = message.sender.id === profile.id;

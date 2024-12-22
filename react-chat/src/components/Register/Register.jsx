@@ -1,9 +1,10 @@
-import React, { useState, useContext } from 'react';
+import React, { useState } from 'react';
 import { TextField, Button } from '@mui/material';
-import { AppContext } from '../../context/AppContext';
+import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import styles from './Register.module.scss';
 import { Api } from '../../api';
+import { handleLogin } from '../../slices/authSlice';
 
 export const Register = () => {
     const [username, setUsername] = useState('');
@@ -12,8 +13,8 @@ export const Register = () => {
     const [lastName, setLastName] = useState('');
     const [bio, setBio] = useState('');
     const [avatar, setAvatar] = useState(null);
-    const { handleLogin } = useContext(AppContext);
     const navigate = useNavigate();
+    const dispatch = useDispatch();
     const [errors, setErrors] = useState({});
 
     const handleAvatarChange = (e) => {
@@ -45,11 +46,11 @@ export const Register = () => {
             bio: bio.trim(),
             avatar: avatar,
         };
-        
+
         try {
             await Api.register(userData);
             const loginData = await Api.login(username.trim(), password.trim());
-            handleLogin(loginData.access, loginData.refresh);
+            dispatch(handleLogin(loginData.access, loginData.refresh));
         } catch (error) {
             console.error('Ошибка при регистрации:', error);
             alert(`Ошибка регистрации: ${error.message}`);
