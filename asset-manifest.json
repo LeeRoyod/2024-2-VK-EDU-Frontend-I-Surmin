@@ -1,13 +1,12 @@
 {
   "files": {
-    "main.css": "/static/css/main.5099ce33.css",
-    "main.js": "/static/js/main.978fc979.js",
-    "index.html": "/index.html",
-    "main.5099ce33.css.map": "/static/css/main.5099ce33.css.map",
-    "main.978fc979.js.map": "/static/js/main.978fc979.js.map"
+    "main.css": "/2024-2-VK-EDU-Frontend-I-Surmin/static/css/main.87ff16ac.css",
+    "main.js": "/2024-2-VK-EDU-Frontend-I-Surmin/static/js/main.dc21b1d5.js",
+    "static/media/notification.mp3": "/2024-2-VK-EDU-Frontend-I-Surmin/static/media/notification.47150c612f686439833c.mp3",
+    "index.html": "/2024-2-VK-EDU-Frontend-I-Surmin/index.html"
   },
   "entrypoints": [
-    "static/css/main.5099ce33.css",
-    "static/js/main.978fc979.js"
+    "static/css/main.87ff16ac.css",
+    "static/js/main.dc21b1d5.js"
   ]
 }
