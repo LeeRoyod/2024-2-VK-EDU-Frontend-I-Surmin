@@ -14,7 +14,7 @@ const root = ReactDOM.createRoot(rootElement);
 root.render(
     <React.StrictMode>
         <Provider store={store}>
-            <BrowserRouter>
+            <BrowserRouter basename="/2024-2-VK-EDU-Frontend-I-Surmin">
                 <App />
             </BrowserRouter>
         </Provider>

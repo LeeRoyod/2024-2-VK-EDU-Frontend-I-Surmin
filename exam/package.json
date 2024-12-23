@@ -2,7 +2,7 @@
   "name": "exam",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://leeroyod.github.io/2024-2-VK-EDU-Frontend-I-Surmin",
+  "homepage": "https://leeroyod.github.io/2024-2-VK-EDU-Frontend-I-Surmin/",
   "dependencies": {
     "@reduxjs/toolkit": "^2.5.0",
     "cra-template-typescript": "1.2.0",
