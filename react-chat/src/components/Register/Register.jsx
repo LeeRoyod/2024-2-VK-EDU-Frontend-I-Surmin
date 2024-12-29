@@ -7,61 +7,61 @@ import { Api } from '../../api';
 import { handleLogin } from '../../slices/authSlice';
 
 export const Register = () => {
-    const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
-    const [firstName, setFirstName] = useState('');
-    const [lastName, setLastName] = useState('');
-    const [bio, setBio] = useState('');
-    const [avatar, setAvatar] = useState(null);
-    const navigate = useNavigate();
-    const dispatch = useDispatch();
-    const [errors, setErrors] = useState({});
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [bio, setBio] = useState('');
+  const [avatar, setAvatar] = useState(null);
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const [errors, setErrors] = useState({});
 
-    const handleAvatarChange = (e) => {
-        setAvatar(e.target.files[0]);
+  const handleAvatarChange = (e) => {
+    setAvatar(e.target.files[0]);
+  };
+
+  const validate = () => {
+    const newErrors = {};
+    if (!username.trim()) newErrors.username = 'Логин обязателен';
+    if (!password.trim()) newErrors.password = 'Пароль обязателен';
+    if (!firstName.trim()) newErrors.firstName = 'Имя обязательно';
+    if (!lastName.trim()) newErrors.lastName = 'Фамилия обязательна';
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (!validate()) {
+      return;
+    }
+
+    const userData = {
+      username: username.trim(),
+      password: password.trim(),
+      first_name: firstName.trim(),
+      last_name: lastName.trim(),
+      bio: bio.trim(),
+      avatar
     };
 
-    const validate = () => {
-        const newErrors = {};
-        if (!username.trim()) newErrors.username = 'Логин обязателен';
-        if (!password.trim()) newErrors.password = 'Пароль обязателен';
-        if (!firstName.trim()) newErrors.firstName = 'Имя обязательно';
-        if (!lastName.trim()) newErrors.lastName = 'Фамилия обязательна';
-        setErrors(newErrors);
-        return Object.keys(newErrors).length === 0;
-    };
+    try {
+      await Api.register(userData);
+      const loginData = await Api.login(username.trim(), password.trim());
+      dispatch(handleLogin(loginData.access, loginData.refresh));
+    } catch (error) {
+      console.error('Ошибка при регистрации:', error);
+      alert(`Ошибка регистрации: ${error.message}`);
+    }
+  };
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
+  const handleBackToLogin = () => {
+    navigate('/login');
+  };
 
-        if (!validate()) {
-            return;
-        }
-
-        const userData = {
-            username: username.trim(),
-            password: password.trim(),
-            first_name: firstName.trim(),
-            last_name: lastName.trim(),
-            bio: bio.trim(),
-            avatar: avatar,
-        };
-
-        try {
-            await Api.register(userData);
-            const loginData = await Api.login(username.trim(), password.trim());
-            dispatch(handleLogin(loginData.access, loginData.refresh));
-        } catch (error) {
-            console.error('Ошибка при регистрации:', error);
-            alert(`Ошибка регистрации: ${error.message}`);
-        }
-    };
-
-    const handleBackToLogin = () => {
-        navigate('/login');
-    };
-
-    return (
+  return (
         <div className={styles.authContainer}>
             <h1 className={styles.title}>Мессенджер</h1>
             <h2 className={styles.subtitle}>Регистрация</h2>
@@ -156,5 +156,5 @@ export const Register = () => {
                 </div>
             </form>
         </div>
-    );
-}
+  );
+};

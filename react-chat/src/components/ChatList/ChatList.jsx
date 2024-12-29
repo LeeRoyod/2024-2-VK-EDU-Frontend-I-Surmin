@@ -2,20 +2,20 @@ import React, { useState, useEffect, useCallback } from 'react';
 import styles from './ChatList.module.scss';
 import { ChatItem } from '../ChatItem/ChatItem';
 import {
-    TextField,
-    IconButton,
-    Menu,
-    MenuItem,
-    Dialog,
-    DialogTitle,
-    DialogContent,
-    DialogActions,
-    Button,
-    List,
-    ListItem,
-    ListItemButton,
-    ListItemText,
-    Checkbox,
+  TextField,
+  IconButton,
+  Menu,
+  MenuItem,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Button,
+  List,
+  ListItem,
+  ListItemButton,
+  ListItemText,
+  Checkbox
 } from '@mui/material';
 import { Edit, Menu as MenuIcon } from '@mui/icons-material';
 import { useSelector, useDispatch } from 'react-redux';
@@ -24,146 +24,146 @@ import { Api } from '../../api';
 import { setChats } from '../../slices/chatsSlice';
 
 export const ChatList = () => {
-    const [searchTerm, setSearchTerm] = useState('');
-    const { chats } = useSelector(state => state.chats);
-    const { profile } = useSelector(state => state.auth);
-    const dispatch = useDispatch();
-    const navigate = useNavigate();
-    const [users, setUsers] = useState([]);
-    const [anchorEl, setAnchorEl] = useState(null);
-    const openMenu = Boolean(anchorEl);
-    const [openCreateChatDialog, setOpenCreateChatDialog] = useState(false);
-    const [chatTitle, setChatTitle] = useState('');
-    const [selectedUserIds, setSelectedUserIds] = useState([]);
-    const [userSearchTerm, setUserSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
+  const { chats } = useSelector(state => state.chats);
+  const { profile } = useSelector(state => state.auth);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const [users, setUsers] = useState([]);
+  const [anchorEl, setAnchorEl] = useState(null);
+  const openMenu = Boolean(anchorEl);
+  const [openCreateChatDialog, setOpenCreateChatDialog] = useState(false);
+  const [chatTitle, setChatTitle] = useState('');
+  const [selectedUserIds, setSelectedUserIds] = useState([]);
+  const [userSearchTerm, setUserSearchTerm] = useState('');
 
-    const fetchChatsData = useCallback(async () => {
-        try {
-            const allChats = await Api.getChats(100);
-            dispatch(setChats(allChats));
-        } catch (error) {
-            console.error('Ошибка при получении чатов:', error);
-        }
-    }, [dispatch]);
+  const fetchChatsData = useCallback(async () => {
+    try {
+      const allChats = await Api.getChats(100);
+      dispatch(setChats(allChats));
+    } catch (error) {
+      console.error('Ошибка при получении чатов:', error);
+    }
+  }, [dispatch]);
 
-    const fetchUsersData = useCallback(async () => {
-        try {
-            const allUsers = await Api.getUsers(100);
-            setUsers(allUsers);
-        } catch (error) {
-            console.error('Ошибка при получении списка пользователей:', error);
-        }
-    }, []);
+  const fetchUsersData = useCallback(async () => {
+    try {
+      const allUsers = await Api.getUsers(100);
+      setUsers(allUsers);
+    } catch (error) {
+      console.error('Ошибка при получении списка пользователей:', error);
+    }
+  }, []);
 
-    useEffect(() => {
-        fetchChatsData();
-        fetchUsersData();
-    }, [fetchChatsData, fetchUsersData]);
+  useEffect(() => {
+    fetchChatsData();
+    fetchUsersData();
+  }, [fetchChatsData, fetchUsersData]);
 
-    const addNewChat = async (chatData) => {
-        try {
-            await Api.createChat(chatData);
-            fetchChatsData();
-        } catch (error) {
-            console.error('Ошибка при создании чата:', error);
-            alert(`Ошибка при создании чата: ${error.message}`);
-        }
-    };
+  const addNewChat = async (chatData) => {
+    try {
+      await Api.createChat(chatData);
+      fetchChatsData();
+    } catch (error) {
+      console.error('Ошибка при создании чата:', error);
+      alert(`Ошибка при создании чата: ${error.message}`);
+    }
+  };
 
-    const deleteChatHandler = async (chatId) => {
-        const confirmed = window.confirm('Вы действительно хотите удалить этот чат?');
-        if (!confirmed) return;
-        try {
-            await Api.deleteChat(chatId);
-            dispatch(setChats(chats.filter((chat) => chat.id !== chatId)));
-        } catch (error) {
-            console.error('Ошибка при удалении чата:', error);
-            alert(`Ошибка при удалении чата: ${error.message}`);
-        }
-    };
+  const deleteChatHandler = async (chatId) => {
+    const confirmed = window.confirm('Вы действительно хотите удалить этот чат?');
+    if (!confirmed) return;
+    try {
+      await Api.deleteChat(chatId);
+      dispatch(setChats(chats.filter((chat) => chat.id !== chatId)));
+    } catch (error) {
+      console.error('Ошибка при удалении чата:', error);
+      alert(`Ошибка при удалении чата: ${error.message}`);
+    }
+  };
 
-    const filteredChats = chats.filter((chat) =>
-        chat.title.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+  const filteredChats = chats.filter((chat) =>
+    chat.title.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
-    const handleBurgerClick = (event) => {
-        setAnchorEl(event.currentTarget);
-    };
+  const handleBurgerClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
 
-    const handleMenuClose = () => {
-        setAnchorEl(null);
-    };
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+  };
 
-    const handleProfileClick = () => {
-        navigate('/profile');
-        handleMenuClose();
-    };
+  const handleProfileClick = () => {
+    navigate('/profile');
+    handleMenuClose();
+  };
 
-    const openChat = (chatId) => {
-        navigate(`/chat/${chatId}`);
-    };
+  const openChat = (chatId) => {
+    navigate(`/chat/${chatId}`);
+  };
 
-    const handleCreateChatClick = () => {
-        setOpenCreateChatDialog(true);
-    };
+  const handleCreateChatClick = () => {
+    setOpenCreateChatDialog(true);
+  };
 
-    const handleCreateChatClose = () => {
-        setOpenCreateChatDialog(false);
-    };
+  const handleCreateChatClose = () => {
+    setOpenCreateChatDialog(false);
+  };
 
-    const handleCreateChatConfirm = () => {
-        if (selectedUserIds.length === 1) {
-            const chatData = {
-                is_private: true,
-                members: selectedUserIds,
-            };
-            addNewChat(chatData);
-        } else {
-            if (chatTitle.trim() === '') {
-                alert('Введите имя нового чата для группового чата');
-                return;
-            }
-            if (selectedUserIds.length === 0) {
-                alert('Выберите пользователей для добавления в чат');
-                return;
-            }
-            const chatData = {
-                title: chatTitle.trim(),
-                is_private: false,
-                members: selectedUserIds,
-            };
-            addNewChat(chatData);
-        }
+  const handleCreateChatConfirm = () => {
+    if (selectedUserIds.length === 1) {
+      const chatData = {
+        is_private: true,
+        members: selectedUserIds
+      };
+      addNewChat(chatData);
+    } else {
+      if (chatTitle.trim() === '') {
+        alert('Введите имя нового чата для группового чата');
+        return;
+      }
+      if (selectedUserIds.length === 0) {
+        alert('Выберите пользователей для добавления в чат');
+        return;
+      }
+      const chatData = {
+        title: chatTitle.trim(),
+        is_private: false,
+        members: selectedUserIds
+      };
+      addNewChat(chatData);
+    }
 
-        setOpenCreateChatDialog(false);
-    };
+    setOpenCreateChatDialog(false);
+  };
 
-    const handleUserToggle = (userId) => {
-        const currentIndex = selectedUserIds.indexOf(userId);
-        const newSelectedUserIds = [...selectedUserIds];
+  const handleUserToggle = (userId) => {
+    const currentIndex = selectedUserIds.indexOf(userId);
+    const newSelectedUserIds = [...selectedUserIds];
 
-        if (currentIndex === -1) {
-            newSelectedUserIds.push(userId);
-        } else {
-            newSelectedUserIds.splice(currentIndex, 1);
-        }
-        setSelectedUserIds(newSelectedUserIds);
-    };
+    if (currentIndex === -1) {
+      newSelectedUserIds.push(userId);
+    } else {
+      newSelectedUserIds.splice(currentIndex, 1);
+    }
+    setSelectedUserIds(newSelectedUserIds);
+  };
 
-    const filteredUsers = users
-        .filter((user) => {
-            const fullName = `${user.first_name} ${user.last_name} ${user.username}`;
-            return fullName.toLowerCase().includes(userSearchTerm.toLowerCase());
-        })
-        .filter((user) => user.id !== profile?.id);
+  const filteredUsers = users
+    .filter((user) => {
+      const fullName = `${user.first_name} ${user.last_name} ${user.username}`;
+      return fullName.toLowerCase().includes(userSearchTerm.toLowerCase());
+    })
+    .filter((user) => user.id !== profile?.id);
 
-    const handleCreateChatDialogExited = () => {
-        setChatTitle('');
-        setSelectedUserIds([]);
-        setUserSearchTerm('');
-    };
+  const handleCreateChatDialogExited = () => {
+    setChatTitle('');
+    setSelectedUserIds([]);
+    setUserSearchTerm('');
+  };
 
-    return (
+  return (
         <div className={styles.form}>
             <header className={styles.header}>
                 <IconButton
@@ -187,12 +187,12 @@ export const ChatList = () => {
                     open={openMenu}
                     onClose={handleMenuClose}
                     anchorOrigin={{
-                        vertical: 'top',
-                        horizontal: 'right',
+                      vertical: 'top',
+                      horizontal: 'right'
                     }}
                     transformOrigin={{
-                        vertical: 'top',
-                        horizontal: 'right',
+                      vertical: 'top',
+                      horizontal: 'right'
                     }}
                 >
                     <MenuItem onClick={handleProfileClick}>Мой профиль</MenuItem>
@@ -273,5 +273,5 @@ export const ChatList = () => {
                 <Edit />
             </IconButton>
         </div>
-    );
-}
+  );
+};

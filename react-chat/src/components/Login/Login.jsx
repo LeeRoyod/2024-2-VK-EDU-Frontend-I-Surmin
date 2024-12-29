@@ -7,27 +7,27 @@ import { Api } from '../../api';
 import { handleLogin } from '../../slices/authSlice';
 
 export const Login = () => {
-    const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
-    const dispatch = useDispatch();
-    const navigate = useNavigate();
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        try {
-            const data = await Api.login(username, password);
-            dispatch(handleLogin(data.access, data.refresh));
-        } catch (error) {
-            console.error('Ошибка авторизации:', error);
-            alert('Неправильный логин или пароль');
-        }
-    };
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const data = await Api.login(username, password);
+      dispatch(handleLogin(data.access, data.refresh));
+    } catch (error) {
+      console.error('Ошибка авторизации:', error);
+      alert('Неправильный логин или пароль');
+    }
+  };
 
-    const handleRegisterRedirect = () => {
-        navigate('/register');
-    };
+  const handleRegisterRedirect = () => {
+    navigate('/register');
+  };
 
-    return (
+  return (
         <div className={styles.authContainer}>
             <h1 className={styles.title}>Мессенджер</h1>
             <h2 className={styles.subtitle}>Вход</h2>
@@ -66,5 +66,5 @@ export const Login = () => {
                 </Button>
             </form>
         </div>
-    );
-}
+  );
+};
