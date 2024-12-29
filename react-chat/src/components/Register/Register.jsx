@@ -62,8 +62,9 @@ export const Register = () => {
     };
 
     return (
-        <div className={styles.registerContainer}>
-            <h1>Регистрация</h1>
+        <div className={styles.authContainer}>
+            <h1 className={styles.title}>Мессенджер</h1>
+            <h2 className={styles.subtitle}>Регистрация</h2>
             <form className={styles.form} onSubmit={handleSubmit}>
                 <TextField
                     label="Логин"

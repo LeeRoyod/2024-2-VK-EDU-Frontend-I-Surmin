@@ -60,13 +60,9 @@ export const ChatList = () => {
         fetchUsersData();
     }, [fetchChatsData, fetchUsersData]);
 
-    const addNewChat = async (chatName, memberIds) => {
+    const addNewChat = async (chatData) => {
         try {
-            await Api.createChat({
-                title: chatName,
-                is_private: false,
-                members: memberIds,
-            });
+            await Api.createChat(chatData);
             fetchChatsData();
         } catch (error) {
             console.error('Ошибка при создании чата:', error);
@@ -116,15 +112,29 @@ export const ChatList = () => {
     };
 
     const handleCreateChatConfirm = () => {
-        if (chatTitle.trim() === '') {
-            alert('Введите имя нового чата');
-            return;
+        if (selectedUserIds.length === 1) {
+            const chatData = {
+                is_private: true,
+                members: selectedUserIds,
+            };
+            addNewChat(chatData);
+        } else {
+            if (chatTitle.trim() === '') {
+                alert('Введите имя нового чата для группового чата');
+                return;
+            }
+            if (selectedUserIds.length === 0) {
+                alert('Выберите пользователей для добавления в чат');
+                return;
+            }
+            const chatData = {
+                title: chatTitle.trim(),
+                is_private: false,
+                members: selectedUserIds,
+            };
+            addNewChat(chatData);
         }
-        if (selectedUserIds.length === 0) {
-            alert('Выберите пользователей для добавления в чат');
-            return;
-        }
-        addNewChat(chatTitle, selectedUserIds);
+
         setOpenCreateChatDialog(false);
     };
 
@@ -207,16 +217,18 @@ export const ChatList = () => {
             >
                 <DialogTitle>Создать новый чат</DialogTitle>
                 <DialogContent>
-                    <TextField
-                        autoFocus
-                        margin="dense"
-                        label="Название чата"
-                        type="text"
-                        fullWidth
-                        value={chatTitle}
-                        onChange={(e) => setChatTitle(e.target.value)}
-                        required
-                    />
+                    {selectedUserIds.length !== 1 && (
+                        <TextField
+                            autoFocus
+                            margin="dense"
+                            label="Название чата (для групп)"
+                            type="text"
+                            fullWidth
+                            value={chatTitle}
+                            onChange={(e) => setChatTitle(e.target.value)}
+                            required={selectedUserIds.length !== 1}
+                        />
+                    )}
                     <TextField
                         margin="dense"
                         label="Поиск пользователей"

@@ -23,29 +23,69 @@ export const ChatItem = ({ chat, openChat, deleteChat }) => {
     };
 
     let lastMessageText = 'Нет сообщений';
+    let lastMessageTime = '';
+    let lastMessageFromUser = false;
+    let lastMessageReadStatus = '';
+
     if (chat.last_message) {
-        if (chat.last_message.text && chat.last_message.text.trim() !== '') {
-            lastMessageText = chat.last_message.text;
-        } else if (chat.last_message.files && chat.last_message.files.length > 0) {
-            lastMessageText = chat.last_message.files.length === 1 ? 'Изображение' : 'Изображения';
+        const lastMsg = chat.last_message;
+
+        if (lastMsg.text && lastMsg.text.trim() !== '') {
+            lastMessageText = lastMsg.text;
+        } else if (lastMsg.files && lastMsg.files.length > 0) {
+            lastMessageText = lastMsg.files.length === 1 ? 'Изображение' : 'Изображения';
+        }
+
+        if (lastMsg.created_at) {
+            lastMessageTime = new Date(lastMsg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        }
+
+        if (lastMsg.sender && lastMsg.sender.id === profile.id) {
+            lastMessageFromUser = true;
+
+            if (Array.isArray(lastMsg.was_read_by)) {
+                const otherReaders = lastMsg.was_read_by.filter(u => u.id !== profile.id);
+                if (otherReaders.length > 0) {
+                    lastMessageReadStatus = '✔✔';
+                } else {
+                    lastMessageReadStatus = '✔';
+                }
+            } else {
+                lastMessageReadStatus = '✔';
+            }
         }
     }
 
-    const lastMessageTime = chat.last_message && chat.last_message.created_at
-        ? new Date(chat.last_message.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-        : '';
+    let chatName = chat.title;
+    let chatAvatar = chat.avatar;
+    let onlineIndicator = null;
 
-    const lastMessageFromUser = chat.last_message && chat.last_message.sender && chat.last_message.sender.id === profile.id;
+    if (chat.is_private && chat.members.length === 2) {
+        const otherUser = chat.members.find(m => m.id !== profile.id);
+        if (otherUser) {
+            chatName = `${otherUser.first_name} ${otherUser.last_name}`.trim() || otherUser.username;
+            chatAvatar = otherUser.avatar;
+            onlineIndicator = (
+                <span
+                    className={styles.onlineIndicator}
+                    style={{ backgroundColor: otherUser.is_online ? '#4caf50' : '#999' }}
+                    title={otherUser.is_online ? 'Онлайн' : 'Оффлайн'}
+                ></span>
+            );
+        }
+    }
 
     return (
         <li className={styles.chatItem} onClick={handleClick}>
             <div className={styles.chatAvatar}>
-                <Avatar src={chat.avatar}>
-                    {!chat.avatar && chat.title.charAt(0)}
+                <Avatar src={chatAvatar}>
+                    {!chatAvatar && chatName.charAt(0)}
                 </Avatar>
             </div>
             <div className={styles.chatInfo}>
-                <div className={styles.chatName}>{chat.title}</div>
+                <div className={styles.chatName}>
+                    {chatName} {onlineIndicator}
+                </div>
                 <div className={styles.chatLastMessageContainer}>
                     <div className={styles.chatLastMessage}>{lastMessageText}</div>
                     <div className={styles.chatLastMessageInfo}>
@@ -63,7 +103,7 @@ export const ChatItem = ({ chat, openChat, deleteChat }) => {
                             <span className={styles.messageTime}>{lastMessageTime}</span>
                         )}
                         {lastMessageFromUser && (
-                            <span className={styles.messageCheck}>✓</span>
+                            <span className={styles.messageCheck}>{lastMessageReadStatus}</span>
                         )}
                     </div>
                 </div>

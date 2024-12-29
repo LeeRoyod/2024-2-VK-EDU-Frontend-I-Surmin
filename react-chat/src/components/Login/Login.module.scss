@@ -1,14 +1,49 @@
-.loginContainer {
-  padding: 20px;
-  max-width: 400px;
-  margin: 0 auto;
+.authContainer {
+  background: linear-gradient(to bottom right, rgba(142, 36, 170, 0.7), rgba(142, 36, 170, 0.5));
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding-top: 100px;
+}
+
+.title {
+  font-size: 36px;
+  color: #fff;
+  margin-bottom: 10px;
+  text-align: center;
+  font-weight: bold;
+  letter-spacing: 1px;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.subtitle {
+  font-size: 24px;
+  color: #f0f0f0;
+  margin-bottom: 30px;
+  text-align: center;
+  font-weight: 500;
 }
 
 .form {
+  background: #fff;
+  padding: 30px 20px;
+  border-radius: 20px;
+  width: 320px;
+  box-sizing: border-box;
   display: flex;
   flex-direction: column;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+  animation: fadeIn 0.5s ease-in-out;
 }
 
 .loginButton {
   margin-top: 20px;
+  font-weight: bold;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
 }

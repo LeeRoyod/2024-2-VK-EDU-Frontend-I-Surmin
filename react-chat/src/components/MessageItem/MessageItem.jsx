@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useSelector } from 'react-redux';
 import styles from './MessageItem.module.scss';
 import { Typography, Avatar, IconButton, TextField } from '@mui/material';
 import { Edit, Delete, Save, Close } from '@mui/icons-material';
@@ -6,11 +7,23 @@ import Modal from 'react-modal';
 Modal.setAppElement('#root');
 
 export const MessageItem = ({ message, isMyMessage, isNew, onDeleteMessage, onEditMessage }) => {
-    const { text, sender, created_at, files, voice } = message;
+    const { profile } = useSelector(state => state.auth);
+    const { text, sender, created_at, files, voice, was_read_by } = message;
+
     const [isEditing, setIsEditing] = useState(false);
     const [editedText, setEditedText] = useState(text || '');
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [currentImage, setCurrentImage] = useState(null);
+
+    const messageTime = new Date(created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+    let readStatus = '';
+    if (isMyMessage) {
+        const otherReaders = was_read_by.filter(user => user.id !== profile.id);
+        readStatus = otherReaders.length > 0 ? '✔✔' : '✔';
+    }
+
+    const isReadByUser = was_read_by.some(u => u.id === profile.id);
 
     const messageClass = [styles.message];
     if (isMyMessage) {
@@ -20,7 +33,9 @@ export const MessageItem = ({ message, isMyMessage, isNew, onDeleteMessage, onEd
         messageClass.push(styles.newMessage);
     }
 
-    const messageTime = new Date(created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    if (!isMyMessage && !isReadByUser) {
+        messageClass.push(styles.unread);
+    }
 
     const handleDelete = () => {
         onDeleteMessage(message.id);
@@ -105,6 +120,7 @@ export const MessageItem = ({ message, isMyMessage, isNew, onDeleteMessage, onEd
                                         {sender.first_name} {sender.last_name}, {messageTime}
                                     </Typography>
                                     <div className={styles.messageActions}>
+                                        <span className={styles.readStatus}>{readStatus}</span>
                                         <IconButton size="small" onClick={handleEditToggle}>
                                             <Edit fontSize="small" />
                                         </IconButton>
