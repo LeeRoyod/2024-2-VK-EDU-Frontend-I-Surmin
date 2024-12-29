@@ -1,0 +1,100 @@
+.history-container {
+    max-width: 600px;
+    margin: 2rem auto;
+    padding: 1.5rem;
+    font-family: 'Segoe UI', Tahoma, sans-serif;
+    background: #ffffffcc;
+    backdrop-filter: blur(8px);
+    border-radius: 10px;
+    box-shadow: 0 5px 12px rgba(0,0,0,0.08);
+    transition: box-shadow 0.3s ease;
+}
+.history-container:hover {
+    box-shadow: 0 6px 15px rgba(0,0,0,0.12);
+}
+
+.history-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+.history-header h1 {
+    margin: 0;
+    font-size: 1.4rem;
+    color: #333;
+}
+.header-buttons {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.header-buttons a,
+.header-buttons button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    vertical-align: middle;
+    text-decoration: none;
+    background-color: #4285f4;
+    color: #fff;
+    font-size: 0.95rem;
+    line-height: 1;
+    font-weight: bold;
+    margin: 0;
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+}
+.header-buttons a:hover,
+.header-buttons button:hover {
+    background-color: #1e88e5;
+    transform: translateY(-1px);
+}
+.header-buttons button:disabled {
+    opacity: 0.5;
+    cursor: default;
+    transform: none;
+}
+
+.history-list {
+    border-top: 1px solid #ddd;
+    padding-top: 1rem;
+}
+.history-item {
+    border-bottom: 1px solid #eee;
+    padding: 0.75rem 0;
+    transition: background-color 0.2s ease;
+}
+.history-item:hover {
+    background-color: #f9f9f9;
+}
+
+.lang-info {
+    font-weight: bold;
+    margin-bottom: 0.25rem;
+    color: #444;
+}
+.original-text {
+    font-size: 1rem;
+    margin-bottom: 0.25rem;
+}
+.translated-text {
+    color: #555;
+    margin-bottom: 0.25rem;
+}
+.timestamp {
+    font-size: 0.8rem;
+    color: #999;
+    margin-top: 0.25rem;
+}
+.empty {
+    color: #666;
+    font-style: italic;
+    margin: 0;
+    text-align: center;
+    padding: 1rem 0;
+}
