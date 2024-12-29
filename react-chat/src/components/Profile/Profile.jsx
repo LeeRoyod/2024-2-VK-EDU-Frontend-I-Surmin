@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import styles from './Profile.module.scss';
-import { TextField, Button, IconButton, Avatar } from '@mui/material';
+import { TextField, Button, IconButton } from '@mui/material';
 import { ArrowBack } from '@mui/icons-material';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { Api } from '../../api';
 import { handleLogout, setProfile } from '../../slices/authSlice';
+import { LazyLoadAvatar } from '../LazyLoadAvatar/LazyLoadAvatar';
 
 export const Profile = () => {
     const dispatch = useDispatch();
@@ -95,12 +96,15 @@ export const Profile = () => {
             </header>
             <form className={styles.form} onSubmit={handleSubmit}>
                 <div className={styles.avatarContainer}>
-                    <Avatar
+                    <LazyLoadAvatar
                         src={profile?.avatar}
+                        alt={`${profile?.first_name} ${profile?.last_name}`}
                         sx={{ width: 100, height: 100, fontSize: 48 }}
                     >
-                        {(!profile?.avatar && profile?.first_name) ? profile.first_name.charAt(0) : ''}
-                    </Avatar>
+                        {(!profile?.avatar && profile?.first_name)
+                            ? profile.first_name.charAt(0)
+                            : ''}
+                    </LazyLoadAvatar>
                 </div>
                 <TextField
                     label="Логин"

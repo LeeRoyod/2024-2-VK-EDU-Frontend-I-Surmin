@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import styles from './MessageItem.module.scss';
-import { Typography, Avatar, IconButton, TextField } from '@mui/material';
+import { Typography, IconButton, TextField } from '@mui/material';
 import { Edit, Delete, Save, Close } from '@mui/icons-material';
 import Modal from 'react-modal';
+import { LazyLoadAvatar } from '../LazyLoadAvatar/LazyLoadAvatar';
+import { LazyLoadImage } from '../LazyLoadImage/LazyLoadImage';
+
 Modal.setAppElement('#root');
 
 export const MessageItem = ({ message, isMyMessage, isNew, onDeleteMessage, onEditMessage }) => {
@@ -32,7 +35,6 @@ export const MessageItem = ({ message, isMyMessage, isNew, onDeleteMessage, onEd
     if (isNew) {
         messageClass.push(styles.newMessage);
     }
-
     if (!isMyMessage && !isReadByUser) {
         messageClass.push(styles.unread);
     }
@@ -97,7 +99,7 @@ export const MessageItem = ({ message, isMyMessage, isNew, onDeleteMessage, onEd
                                 {files && files.length > 0 && (
                                     <div className={styles.imagesContainer}>
                                         {files.map((file, index) => (
-                                            <img
+                                            <LazyLoadImage
                                                 key={index}
                                                 src={file.item}
                                                 alt={`file-${index}`}
@@ -132,9 +134,13 @@ export const MessageItem = ({ message, isMyMessage, isNew, onDeleteMessage, onEd
                             </>
                         )}
                     </div>
-                    <Avatar src={sender.avatar} className={styles.avatar}>
+                    <LazyLoadAvatar
+                        src={sender.avatar}
+                        alt={`${sender.first_name} ${sender.last_name}`}
+                        className={styles.avatar}
+                    >
                         {!sender.avatar && sender.first_name.charAt(0)}
-                    </Avatar>
+                    </LazyLoadAvatar>
                 </>
             ) : (
                 <>
@@ -145,7 +151,7 @@ export const MessageItem = ({ message, isMyMessage, isNew, onDeleteMessage, onEd
                         {files && files.length > 0 && (
                             <div className={styles.imagesContainer}>
                                 {files.map((file, index) => (
-                                    <img
+                                    <LazyLoadImage
                                         key={index}
                                         src={file.item}
                                         alt={`file-${index}`}
@@ -169,11 +175,16 @@ export const MessageItem = ({ message, isMyMessage, isNew, onDeleteMessage, onEd
                             </Typography>
                         </div>
                     </div>
-                    <Avatar src={sender.avatar} className={styles.avatar}>
+                    <LazyLoadAvatar
+                        src={sender.avatar}
+                        alt={`${sender.first_name} ${sender.last_name}`}
+                        className={styles.avatar}
+                    >
                         {!sender.avatar && sender.first_name.charAt(0)}
-                    </Avatar>
+                    </LazyLoadAvatar>
                 </>
             )}
+
             <Modal
                 isOpen={isModalOpen}
                 onRequestClose={closeModal}
