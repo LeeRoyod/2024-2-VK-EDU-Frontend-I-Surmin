@@ -9,6 +9,7 @@ import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { Api } from '../../api';
 import { debugLog } from '../../utils/logger';
+import { LazyLoadImage } from '../LazyLoadImage/LazyLoadImage';
 
 export const Chat = ({ chatId }) => {
     const { profile } = useSelector(state => state.auth);
@@ -367,16 +368,16 @@ export const Chat = ({ chatId }) => {
                         className={styles.attachIcon}
                         onClick={() => fileInputRef.current.click()}
                     >
-                        <ImageIcon/>
+                        <ImageIcon />
                     </IconButton>
                     <IconButton className={styles.locationButton} onClick={handleSendLocation}>
-                        <LocationOn/>
+                        <LocationOn />
                     </IconButton>
                     <input
                         type="file"
                         accept="image/*"
                         multiple
-                        style={{display: 'none'}}
+                        style={{ display: 'none' }}
                         ref={fileInputRef}
                         onChange={handleFileSelect}
                     />
@@ -389,21 +390,21 @@ export const Chat = ({ chatId }) => {
                         onChange={handleInputChange}
                     />
                     <IconButton className={styles.sendButton} type="submit">
-                        <Send/>
+                        <Send />
                     </IconButton>
                     <IconButton
                         className={styles.micButton}
                         onClick={isRecording ? stopRecording : startRecording}
                         color={isRecording ? 'secondary' : 'default'}
                     >
-                        {isRecording ? <Stop/> : <Mic/>}
+                        {isRecording ? <Stop /> : <Mic />}
                     </IconButton>
                 </div>
                 {previews.length > 0 && (
                     <div className={styles.selectedFiles}>
                         {previews.map((preview, index) => (
                             <div key={index} className={styles.fileItem}>
-                                <img
+                                <LazyLoadImage
                                     src={preview.url}
                                     alt={`Предпросмотр ${index + 1}`}
                                     className={styles.previewImage}
@@ -415,13 +416,13 @@ export const Chat = ({ chatId }) => {
                                         setPreviews(previews.filter((_, i) => i !== index));
                                     }}
                                 >
-                                    <CloseIcon fontSize="small"/>
+                                    <CloseIcon fontSize="small" />
                                 </IconButton>
                             </div>
                         ))}
                     </div>
                 )}
-                <audio ref={audioRef} controls style={{display: 'none'}}/>
+                <audio ref={audioRef} controls style={{ display: 'none' }} />
             </form>
         </div>
     );

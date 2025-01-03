@@ -1,8 +1,9 @@
 import React from 'react';
 import styles from './ChatItem.module.scss';
-import { Avatar, IconButton } from '@mui/material';
+import { IconButton } from '@mui/material';
 import { Delete } from '@mui/icons-material';
 import { useSelector } from 'react-redux';
+import { LazyLoadAvatar } from '../LazyLoadAvatar/LazyLoadAvatar';
 
 export const ChatItem = ({ chat, openChat, deleteChat }) => {
     const { profile } = useSelector(state => state.auth);
@@ -78,9 +79,9 @@ export const ChatItem = ({ chat, openChat, deleteChat }) => {
     return (
         <li className={styles.chatItem} onClick={handleClick}>
             <div className={styles.chatAvatar}>
-                <Avatar src={chatAvatar}>
-                    {!chatAvatar && chatName.charAt(0)}
-                </Avatar>
+                <LazyLoadAvatar src={chatAvatar}>
+                    {(!chatAvatar && chatName.charAt(0))}
+                </LazyLoadAvatar>
             </div>
             <div className={styles.chatInfo}>
                 <div className={styles.chatName}>
