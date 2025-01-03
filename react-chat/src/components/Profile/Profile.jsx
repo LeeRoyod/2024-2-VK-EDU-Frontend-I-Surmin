@@ -9,84 +9,84 @@ import { handleLogout, setProfile } from '../../slices/authSlice';
 import { LazyLoadAvatar } from '../LazyLoadAvatar/LazyLoadAvatar';
 
 export const Profile = () => {
-    const dispatch = useDispatch();
-    const { profile } = useSelector(state => state.auth);
-    const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
-    const [firstName, setFirstName] = useState('');
-    const [lastName, setLastName] = useState('');
-    const [bio, setBio] = useState('');
-    const [avatar, setAvatar] = useState(null);
-    const [errors, setErrors] = useState({});
-    const [isInitialized, setIsInitialized] = useState(false);
-    const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const { profile } = useSelector(state => state.auth);
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [bio, setBio] = useState('');
+  const [avatar, setAvatar] = useState(null);
+  const [errors, setErrors] = useState({});
+  const [isInitialized, setIsInitialized] = useState(false);
+  const navigate = useNavigate();
 
-    useEffect(() => {
-        if (profile && !isInitialized) {
-            setUsername(profile.username || '');
-            setFirstName(profile.first_name || '');
-            setLastName(profile.last_name || '');
-            setBio(profile.bio || '');
-            setIsInitialized(true);
-        }
-    }, [profile, isInitialized]);
+  useEffect(() => {
+    if (profile && !isInitialized) {
+      setUsername(profile.username || '');
+      setFirstName(profile.first_name || '');
+      setLastName(profile.last_name || '');
+      setBio(profile.bio || '');
+      setIsInitialized(true);
+    }
+  }, [profile, isInitialized]);
 
-    const handleAvatarChange = (e) => {
-        setAvatar(e.target.files[0]);
-    };
+  const handleAvatarChange = (e) => {
+    setAvatar(e.target.files[0]);
+  };
 
-    const validate = () => {
-        const newErrors = {};
-        if (!username.trim()) {
-            newErrors.username = 'Логин обязателен';
-        }
-        if (!firstName.trim()) {
-            newErrors.firstName = 'Имя обязательно';
-        }
-        if (!lastName.trim()) {
-            newErrors.lastName = 'Фамилия обязательна';
-        }
-        setErrors(newErrors);
-        return Object.keys(newErrors).length === 0;
-    };
+  const validate = () => {
+    const newErrors = {};
+    if (!username.trim()) {
+      newErrors.username = 'Логин обязателен';
+    }
+    if (!firstName.trim()) {
+      newErrors.firstName = 'Имя обязательно';
+    }
+    if (!lastName.trim()) {
+      newErrors.lastName = 'Фамилия обязательна';
+    }
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        if (validate()) {
-            const userData = {
-                username: username.trim(),
-                first_name: firstName.trim(),
-                last_name: lastName.trim(),
-                bio: bio.trim(),
-            };
-            if (password) {
-                userData.password = password;
-            }
-            if (avatar) {
-                userData.avatar = avatar;
-            }
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (validate()) {
+      const userData = {
+        username: username.trim(),
+        first_name: firstName.trim(),
+        last_name: lastName.trim(),
+        bio: bio.trim()
+      };
+      if (password) {
+        userData.password = password;
+      }
+      if (avatar) {
+        userData.avatar = avatar;
+      }
 
-            try {
-                const updatedProfile = await Api.updateUser(profile.id, userData);
-                dispatch(setProfile(updatedProfile));
-                navigate('/');
-            } catch (error) {
-                console.error('Ошибка при обновлении профиля:', error);
-                alert(`Ошибка при обновлении профиля: ${JSON.stringify(error)}`);
-            }
-        }
-    };
+      try {
+        const updatedProfile = await Api.updateUser(profile.id, userData);
+        dispatch(setProfile(updatedProfile));
+        navigate('/');
+      } catch (error) {
+        console.error('Ошибка при обновлении профиля:', error);
+        alert(`Ошибка при обновлении профиля: ${JSON.stringify(error)}`);
+      }
+    }
+  };
 
-    const handleGoBack = () => {
-        navigate(-1);
-    };
+  const handleGoBack = () => {
+    navigate(-1);
+  };
 
-    const handleLogoutClick = () => {
-        dispatch(handleLogout());
-        navigate('/login');
-    };
+  const handleLogoutClick = () => {
+    dispatch(handleLogout());
+    navigate('/login');
+  };
 
-    return (
+  return (
         <div className={styles.profileContainer}>
             <header className={styles.header}>
                 <IconButton className={styles.backButton} onClick={handleGoBack}>
@@ -102,8 +102,8 @@ export const Profile = () => {
                         sx={{ width: 100, height: 100, fontSize: 48 }}
                     >
                         {(!profile?.avatar && profile?.first_name)
-                            ? profile.first_name.charAt(0)
-                            : ''}
+                          ? profile.first_name.charAt(0)
+                          : ''}
                     </LazyLoadAvatar>
                 </div>
                 <TextField
@@ -188,5 +188,5 @@ export const Profile = () => {
                 Выйти из аккаунта
             </Button>
         </div>
-    );
-}
+  );
+};
