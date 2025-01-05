@@ -1,0 +1,6 @@
+#!/bin/sh
+. "$(dirname "$0")/_/husky.sh"
+
+echo "Running ESLint in react-chat..."
+cd react-chat || exit 1
+npm run lint

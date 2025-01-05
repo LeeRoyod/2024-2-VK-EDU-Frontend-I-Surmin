@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux';
 import styles from './MessageItem.module.scss';
 import { Typography, IconButton, TextField } from '@mui/material';
@@ -10,69 +11,71 @@ import { LazyLoadImage } from '../LazyLoadImage/LazyLoadImage';
 Modal.setAppElement('#root');
 
 export const MessageItem = ({ message, isMyMessage, isNew, onDeleteMessage, onEditMessage }) => {
-    const { profile } = useSelector(state => state.auth);
-    const { text, sender, created_at, files, voice, was_read_by } = message;
+  const { profile } = useSelector(state => state.auth);
+  const { text, sender, created_at: createdAt, files, voice, was_read_by: wasReadBy = [] } = message;
 
-    const [isEditing, setIsEditing] = useState(false);
-    const [editedText, setEditedText] = useState(text || '');
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const [currentImage, setCurrentImage] = useState(null);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editedText, setEditedText] = useState(text || '');
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [currentImage, setCurrentImage] = useState(null);
 
-    const messageTime = new Date(created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  const messageTime = new Date(createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
-    let readStatus = '';
-    if (isMyMessage) {
-        const otherReaders = was_read_by.filter(user => user.id !== profile.id);
-        readStatus = otherReaders.length > 0 ? '✔✔' : '✔';
+  let readStatus = '';
+  if (isMyMessage) {
+    const otherReaders = wasReadBy.filter(user => user.id !== profile.id);
+    readStatus = otherReaders.length > 0 ? '✔✔' : '✔';
+  }
+
+  const isReadByUser = wasReadBy.some(u => u.id === profile.id);
+
+  const messageClass = [styles.message];
+  if (isMyMessage) {
+    messageClass.push(styles.my);
+  }
+  if (isNew) {
+    messageClass.push(styles.newMessage);
+  }
+  if (!isMyMessage && !isReadByUser) {
+    messageClass.push(styles.unread);
+  }
+
+  const handleDelete = () => {
+    onDeleteMessage(message.id);
+  };
+
+  const handleEditToggle = () => {
+    setIsEditing(!isEditing);
+    setEditedText(text || '');
+  };
+
+  const handleEditSave = () => {
+    if (editedText.trim() === '') {
+      alert('Сообщение не может быть пустым');
+      return;
     }
+    onEditMessage(message.id, editedText);
+    setIsEditing(false);
+  };
 
-    const isReadByUser = was_read_by.some(u => u.id === profile.id);
+  const openModal = (imageSrc) => {
+    setCurrentImage(imageSrc);
+    setIsModalOpen(true);
+  };
 
-    const messageClass = [styles.message];
-    if (isMyMessage) {
-        messageClass.push(styles.my);
-    }
-    if (isNew) {
-        messageClass.push(styles.newMessage);
-    }
-    if (!isMyMessage && !isReadByUser) {
-        messageClass.push(styles.unread);
-    }
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setCurrentImage(null);
+  };
 
-    const handleDelete = () => {
-        onDeleteMessage(message.id);
-    };
-
-    const handleEditToggle = () => {
-        setIsEditing(!isEditing);
-        setEditedText(text || '');
-    };
-
-    const handleEditSave = () => {
-        if (editedText.trim() === '') {
-            alert('Сообщение не может быть пустым');
-            return;
-        }
-        onEditMessage(message.id, editedText);
-        setIsEditing(false);
-    };
-
-    const openModal = (imageSrc) => {
-        setCurrentImage(imageSrc);
-        setIsModalOpen(true);
-    };
-
-    const closeModal = () => {
-        setIsModalOpen(false);
-        setCurrentImage(null);
-    };
-
-    return (
+  return (
         <li className={messageClass.join(' ')}>
-            {isMyMessage ? (
+            {isMyMessage
+              ? (
                 <>
                     <div className={styles.messageContent}>
-                        {isEditing ? (
+                        {isEditing
+                          ? (
                             <>
                                 <TextField
                                     value={editedText}
@@ -91,7 +94,8 @@ export const MessageItem = ({ message, isMyMessage, isNew, onDeleteMessage, onEd
                                     </IconButton>
                                 </div>
                             </>
-                        ) : (
+                            )
+                          : (
                             <>
                                 <Typography variant="body1" component="span">
                                     {text}
@@ -132,7 +136,7 @@ export const MessageItem = ({ message, isMyMessage, isNew, onDeleteMessage, onEd
                                     </div>
                                 </div>
                             </>
-                        )}
+                            )}
                     </div>
                     <LazyLoadAvatar
                         src={sender.avatar}
@@ -142,7 +146,8 @@ export const MessageItem = ({ message, isMyMessage, isNew, onDeleteMessage, onEd
                         {!sender.avatar && sender.first_name.charAt(0)}
                     </LazyLoadAvatar>
                 </>
-            ) : (
+                )
+              : (
                 <>
                     <div className={styles.messageContent}>
                         <Typography variant="body1" component="span">
@@ -183,7 +188,7 @@ export const MessageItem = ({ message, isMyMessage, isNew, onDeleteMessage, onEd
                         {!sender.avatar && sender.first_name.charAt(0)}
                     </LazyLoadAvatar>
                 </>
-            )}
+                )}
 
             <Modal
                 isOpen={isModalOpen}
@@ -196,5 +201,26 @@ export const MessageItem = ({ message, isMyMessage, isNew, onDeleteMessage, onEd
                 {currentImage && <img src={currentImage} alt="Просмотр" className={styles.fullImage} />}
             </Modal>
         </li>
-    );
+  );
+};
+
+MessageItem.propTypes = {
+  message: PropTypes.shape({
+    id: PropTypes.string.isRequired,
+    text: PropTypes.string,
+    sender: PropTypes.shape({
+      id: PropTypes.string,
+      first_name: PropTypes.string,
+      last_name: PropTypes.string,
+      avatar: PropTypes.string
+    }),
+    created_at: PropTypes.string,
+    files: PropTypes.arrayOf(PropTypes.object),
+    voice: PropTypes.string,
+    was_read_by: PropTypes.arrayOf(PropTypes.object)
+  }).isRequired,
+  isMyMessage: PropTypes.bool.isRequired,
+  isNew: PropTypes.bool.isRequired,
+  onDeleteMessage: PropTypes.func.isRequired,
+  onEditMessage: PropTypes.func.isRequired
 };
