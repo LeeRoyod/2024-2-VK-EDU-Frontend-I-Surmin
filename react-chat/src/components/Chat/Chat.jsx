@@ -344,88 +344,88 @@ export const Chat = ({ chatId }) => {
   }
 
   return (
-        <div
-            className={styles.chatContainer}
-            onDragOver={(e) => { e.preventDefault(); }}
-            onDrop={handleDrop}
-        >
-            <header className={styles.header}>
-                <IconButton className={styles.backButton} onClick={handleGoBack}>
-                    <ArrowBack />
-                </IconButton>
-                <h1 className={styles.chatTitle}>{chat.title}</h1>
-            </header>
-            <MessageList
-                messages={messages}
-                messageListRef={messageListRef}
-                lastSentMessageId={lastSentMessageId}
-                onDeleteMessage={onDeleteMessage}
-                onEditMessage={onEditMessage}
-            />
-            {isTyping && <TypingIndicator />}
-            <form className={styles.chatForm} onSubmit={handleSubmit}>
-                <div className={styles.inputContainer}>
-                    <IconButton
-                        className={styles.attachIcon}
-                        onClick={() => fileInputRef.current.click()}
-                    >
-                        <ImageIcon />
-                    </IconButton>
-                    <IconButton className={styles.locationButton} onClick={handleSendLocation}>
-                        <LocationOn />
-                    </IconButton>
-                    <input
-                        type="file"
-                        accept="image/*"
-                        multiple
-                        style={{ display: 'none' }}
-                        ref={fileInputRef}
-                        onChange={handleFileSelect}
-                    />
-                    <TextField
-                        className={styles.formInput}
-                        placeholder="Введите сообщение..."
-                        variant="outlined"
-                        size="small"
-                        value={inputText}
-                        onChange={handleInputChange}
-                    />
-                    <IconButton className={styles.sendButton} type="submit">
-                        <Send />
-                    </IconButton>
-                    <IconButton
-                        className={styles.micButton}
-                        onClick={isRecording ? stopRecording : startRecording}
-                        color={isRecording ? 'secondary' : 'default'}
-                    >
-                        {isRecording ? <Stop /> : <Mic />}
-                    </IconButton>
-                </div>
-                {previews.length > 0 && (
-                    <div className={styles.selectedFiles}>
-                        {previews.map((preview, index) => (
-                            <div key={index} className={styles.fileItem}>
-                                <LazyLoadImage
-                                    src={preview.url}
-                                    alt={`Предпросмотр ${index + 1}`}
-                                    className={styles.previewImage}
-                                />
-                                <IconButton
-                                    size="small"
-                                    onClick={() => {
-                                      setSelectedFiles(selectedFiles.filter((_, i) => i !== index));
-                                      setPreviews(previews.filter((_, i) => i !== index));
-                                    }}
-                                >
-                                    <CloseIcon fontSize="small" />
-                                </IconButton>
-                            </div>
-                        ))}
-                    </div>
-                )}
-                <audio ref={audioRef} controls style={{ display: 'none' }} />
-            </form>
+    <div
+      className={styles.chatContainer}
+      onDragOver={(e) => { e.preventDefault(); }}
+      onDrop={handleDrop}
+    >
+      <header className={styles.header}>
+        <IconButton className={styles.backButton} onClick={handleGoBack}>
+          <ArrowBack />
+        </IconButton>
+        <h1 className={styles.chatTitle}>{chat.title}</h1>
+      </header>
+      <MessageList
+        messages={messages}
+        messageListRef={messageListRef}
+        lastSentMessageId={lastSentMessageId}
+        onDeleteMessage={onDeleteMessage}
+        onEditMessage={onEditMessage}
+      />
+      {isTyping && <TypingIndicator />}
+      <form className={styles.chatForm} onSubmit={handleSubmit}>
+        <div className={styles.inputContainer}>
+          <IconButton
+            className={styles.attachIcon}
+            onClick={() => fileInputRef.current.click()}
+          >
+            <ImageIcon />
+          </IconButton>
+          <IconButton className={styles.locationButton} onClick={handleSendLocation}>
+            <LocationOn />
+          </IconButton>
+          <input
+            type="file"
+            accept="image/*"
+            multiple
+            style={{ display: 'none' }}
+            ref={fileInputRef}
+            onChange={handleFileSelect}
+          />
+          <TextField
+            className={styles.formInput}
+            placeholder="Введите сообщение..."
+            variant="outlined"
+            size="small"
+            value={inputText}
+            onChange={handleInputChange}
+          />
+          <IconButton className={styles.sendButton} type="submit">
+            <Send />
+          </IconButton>
+          <IconButton
+            className={styles.micButton}
+            onClick={isRecording ? stopRecording : startRecording}
+            color={isRecording ? 'secondary' : 'default'}
+          >
+            {isRecording ? <Stop /> : <Mic />}
+          </IconButton>
         </div>
+        {previews.length > 0 && (
+          <div className={styles.selectedFiles}>
+            {previews.map((preview, index) => (
+              <div key={index} className={styles.fileItem}>
+                <LazyLoadImage
+                  src={preview.url}
+                  alt={`Предпросмотр ${index + 1}`}
+                  className={styles.previewImage}
+                />
+                <IconButton
+                  size="small"
+                  onClick={() => {
+                    setSelectedFiles(selectedFiles.filter((_, i) => i !== index));
+                    setPreviews(previews.filter((_, i) => i !== index));
+                  }}
+                >
+                  <CloseIcon fontSize="small" />
+                </IconButton>
+              </div>
+            ))}
+          </div>
+        )}
+        <audio ref={audioRef} controls style={{ display: 'none' }} />
+      </form>
+    </div>
   );
 };
 

@@ -164,114 +164,114 @@ export const ChatList = () => {
   };
 
   return (
-        <div className={styles.form}>
-            <header className={styles.header}>
-                <IconButton
-                    className={styles.burgerButton}
-                    aria-label="Меню"
-                    onClick={handleBurgerClick}
-                >
-                    <MenuIcon />
-                </IconButton>
-                <h1 className={styles.headerTitle}>Мессенджер</h1>
-                <TextField
-                    className={styles.searchInput}
-                    placeholder="Поиск чатов..."
-                    variant="outlined"
-                    size="small"
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                />
-                <Menu
-                    anchorEl={anchorEl}
-                    open={openMenu}
-                    onClose={handleMenuClose}
-                    anchorOrigin={{
-                      vertical: 'top',
-                      horizontal: 'right'
-                    }}
-                    transformOrigin={{
-                      vertical: 'top',
-                      horizontal: 'right'
-                    }}
-                >
-                    <MenuItem onClick={handleProfileClick}>Мой профиль</MenuItem>
-                </Menu>
-            </header>
-            <ul className={styles.chatList}>
-                {filteredChats.map((chat) => (
-                    <ChatItem
-                        key={chat.id}
-                        chat={chat}
-                        openChat={openChat}
-                        deleteChat={deleteChatHandler}
-                    />
-                ))}
-            </ul>
-            <Dialog
-                open={openCreateChatDialog}
-                onClose={handleCreateChatClose}
-                maxWidth="sm"
-                fullWidth
-                onExited={handleCreateChatDialogExited}
-            >
-                <DialogTitle>Создать новый чат</DialogTitle>
-                <DialogContent>
-                    {selectedUserIds.length !== 1 && (
-                        <TextField
-                            autoFocus
-                            margin="dense"
-                            label="Название чата (для групп)"
-                            type="text"
-                            fullWidth
-                            value={chatTitle}
-                            onChange={(e) => setChatTitle(e.target.value)}
-                            required={selectedUserIds.length !== 1}
-                        />
-                    )}
-                    <TextField
-                        margin="dense"
-                        label="Поиск пользователей"
-                        type="text"
-                        fullWidth
-                        value={userSearchTerm}
-                        onChange={(e) => setUserSearchTerm(e.target.value)}
-                    />
-                    <List>
-                        {filteredUsers.map((user) => (
-                            <ListItem key={user.id} disablePadding>
-                                <ListItemButton onClick={() => handleUserToggle(user.id)}>
-                                    <Checkbox
-                                        edge="start"
-                                        checked={selectedUserIds.indexOf(user.id) !== -1}
-                                        tabIndex={-1}
-                                        disableRipple
-                                    />
-                                    <ListItemText
-                                        primary={`${user.first_name} ${user.last_name} (${user.username})`}
-                                    />
-                                </ListItemButton>
-                            </ListItem>
-                        ))}
-                    </List>
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={handleCreateChatClose} color="primary">
+    <div className={styles.form}>
+      <header className={styles.header}>
+        <IconButton
+          className={styles.burgerButton}
+          aria-label="Меню"
+          onClick={handleBurgerClick}
+        >
+          <MenuIcon />
+        </IconButton>
+        <h1 className={styles.headerTitle}>Мессенджер</h1>
+        <TextField
+          className={styles.searchInput}
+          placeholder="Поиск чатов..."
+          variant="outlined"
+          size="small"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
+        <Menu
+          anchorEl={anchorEl}
+          open={openMenu}
+          onClose={handleMenuClose}
+          anchorOrigin={{
+            vertical: 'top',
+            horizontal: 'right'
+          }}
+          transformOrigin={{
+            vertical: 'top',
+            horizontal: 'right'
+          }}
+        >
+          <MenuItem onClick={handleProfileClick}>Мой профиль</MenuItem>
+        </Menu>
+      </header>
+      <ul className={styles.chatList}>
+        {filteredChats.map((chat) => (
+          <ChatItem
+            key={chat.id}
+            chat={chat}
+            openChat={openChat}
+            deleteChat={deleteChatHandler}
+          />
+        ))}
+      </ul>
+      <Dialog
+        open={openCreateChatDialog}
+        onClose={handleCreateChatClose}
+        maxWidth="sm"
+        fullWidth
+        onExited={handleCreateChatDialogExited}
+      >
+        <DialogTitle>Создать новый чат</DialogTitle>
+        <DialogContent>
+          {selectedUserIds.length !== 1 && (
+            <TextField
+              autoFocus
+              margin="dense"
+              label="Название чата (для групп)"
+              type="text"
+              fullWidth
+              value={chatTitle}
+              onChange={(e) => setChatTitle(e.target.value)}
+              required={selectedUserIds.length !== 1}
+            />
+          )}
+          <TextField
+            margin="dense"
+            label="Поиск пользователей"
+            type="text"
+            fullWidth
+            value={userSearchTerm}
+            onChange={(e) => setUserSearchTerm(e.target.value)}
+          />
+          <List>
+            {filteredUsers.map((user) => (
+              <ListItem key={user.id} disablePadding>
+                <ListItemButton onClick={() => handleUserToggle(user.id)}>
+                  <Checkbox
+                    edge="start"
+                    checked={selectedUserIds.indexOf(user.id) !== -1}
+                    tabIndex={-1}
+                    disableRipple
+                  />
+                  <ListItemText
+                    primary={`${user.first_name} ${user.last_name} (${user.username})`}
+                  />
+                </ListItemButton>
+              </ListItem>
+            ))}
+          </List>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCreateChatClose} color="primary">
                         Отмена
-                    </Button>
-                    <Button onClick={handleCreateChatConfirm} color="primary">
+          </Button>
+          <Button onClick={handleCreateChatConfirm} color="primary">
                         Создать
-                    </Button>
-                </DialogActions>
-            </Dialog>
-            <IconButton
-                className={styles.floatingCreateButton}
-                aria-label="Создать Новый Чат"
-                title="Создать Новый Чат"
-                onClick={handleCreateChatClick}
-            >
-                <Edit />
-            </IconButton>
-        </div>
+          </Button>
+        </DialogActions>
+      </Dialog>
+      <IconButton
+        className={styles.floatingCreateButton}
+        aria-label="Создать Новый Чат"
+        title="Создать Новый Чат"
+        onClick={handleCreateChatClick}
+      >
+        <Edit />
+      </IconButton>
+    </div>
   );
 };

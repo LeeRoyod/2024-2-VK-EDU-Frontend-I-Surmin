@@ -34,12 +34,12 @@ export const LazyLoadAvatar = ({ src, alt, children, ...props }) => {
   }, []);
 
   return (
-        <div ref={avatarRef} style={{ display: 'inline-block' }}>
-            <Avatar src={shouldLoad ? src : ''} alt={alt} {...props}>
-                {!shouldLoad && children}
-                {shouldLoad && !src && children}
-            </Avatar>
-        </div>
+    <div ref={avatarRef} style={{ display: 'inline-block' }}>
+      <Avatar src={shouldLoad ? src : ''} alt={alt} {...props}>
+        {!shouldLoad && children}
+        {shouldLoad && !src && children}
+      </Avatar>
+    </div>
   );
 };
 

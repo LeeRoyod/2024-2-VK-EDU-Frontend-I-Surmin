@@ -69,138 +69,138 @@ export const MessageItem = ({ message, isMyMessage, isNew, onDeleteMessage, onEd
   };
 
   return (
-        <li className={messageClass.join(' ')}>
-            {isMyMessage
-              ? (
-                <>
-                    <div className={styles.messageContent}>
-                        {isEditing
-                          ? (
-                            <>
-                                <TextField
-                                    value={editedText}
-                                    onChange={(e) => setEditedText(e.target.value)}
-                                    fullWidth
-                                    multiline
-                                    variant="outlined"
-                                    size="small"
-                                />
-                                <div className={styles.messageActions}>
-                                    <IconButton size="small" onClick={handleEditSave}>
-                                        <Save fontSize="small" />
-                                    </IconButton>
-                                    <IconButton size="small" onClick={handleEditToggle}>
-                                        <Close fontSize="small" />
-                                    </IconButton>
-                                </div>
-                            </>
-                            )
-                          : (
-                            <>
-                                <Typography variant="body1" component="span">
-                                    {text}
-                                </Typography>
-                                {files && files.length > 0 && (
-                                    <div className={styles.imagesContainer}>
-                                        {files.map((file, index) => (
-                                            <LazyLoadImage
-                                                key={index}
-                                                src={file.item}
-                                                alt={`file-${index}`}
-                                                className={styles.messageImage}
-                                                onClick={() => openModal(file.item)}
-                                            />
-                                        ))}
-                                    </div>
-                                )}
-                                {voice && (
-                                    <div className={styles.voiceContainer}>
-                                        <audio controls>
-                                            <source src={voice} type="audio/ogg" />
-                                            Ваш браузер не поддерживает элемент audio.
-                                        </audio>
-                                    </div>
-                                )}
-                                <div className={styles.messageInfo}>
-                                    <Typography component="span" className={styles.nicknameTime}>
-                                        {sender.first_name} {sender.last_name}, {messageTime}
-                                    </Typography>
-                                    <div className={styles.messageActions}>
-                                        <span className={styles.readStatus}>{readStatus}</span>
-                                        <IconButton size="small" onClick={handleEditToggle}>
-                                            <Edit fontSize="small" />
-                                        </IconButton>
-                                        <IconButton size="small" onClick={handleDelete}>
-                                            <Delete fontSize="small" />
-                                        </IconButton>
-                                    </div>
-                                </div>
-                            </>
-                            )}
+    <li className={messageClass.join(' ')}>
+      {isMyMessage
+        ? (
+          <>
+            <div className={styles.messageContent}>
+              {isEditing
+                ? (
+                  <>
+                    <TextField
+                      value={editedText}
+                      onChange={(e) => setEditedText(e.target.value)}
+                      fullWidth
+                      multiline
+                      variant="outlined"
+                      size="small"
+                    />
+                    <div className={styles.messageActions}>
+                      <IconButton size="small" onClick={handleEditSave}>
+                        <Save fontSize="small" />
+                      </IconButton>
+                      <IconButton size="small" onClick={handleEditToggle}>
+                        <Close fontSize="small" />
+                      </IconButton>
                     </div>
-                    <LazyLoadAvatar
-                        src={sender.avatar}
-                        alt={`${sender.first_name} ${sender.last_name}`}
-                        className={styles.avatar}
-                    >
-                        {!sender.avatar && sender.first_name.charAt(0)}
-                    </LazyLoadAvatar>
-                </>
+                  </>
                 )
-              : (
-                <>
-                    <div className={styles.messageContent}>
-                        <Typography variant="body1" component="span">
-                            {text}
-                        </Typography>
-                        {files && files.length > 0 && (
-                            <div className={styles.imagesContainer}>
-                                {files.map((file, index) => (
-                                    <LazyLoadImage
-                                        key={index}
-                                        src={file.item}
-                                        alt={`file-${index}`}
-                                        className={styles.messageImage}
-                                        onClick={() => openModal(file.item)}
-                                    />
-                                ))}
-                            </div>
-                        )}
-                        {voice && (
-                            <div className={styles.voiceContainer}>
-                                <audio controls>
-                                    <source src={voice} type="audio/ogg" />
-                                    Ваш браузер не поддерживает элемент audio.
-                                </audio>
-                            </div>
-                        )}
-                        <div className={styles.messageInfo}>
-                            <Typography component="span" className={styles.nicknameTime}>
-                                {sender.first_name} {sender.last_name}, {messageTime}
-                            </Typography>
-                        </div>
+                : (
+                  <>
+                    <Typography variant="body1" component="span">
+                      {text}
+                    </Typography>
+                    {files && files.length > 0 && (
+                      <div className={styles.imagesContainer}>
+                        {files.map((file, index) => (
+                          <LazyLoadImage
+                            key={index}
+                            src={file.item}
+                            alt={`file-${index}`}
+                            className={styles.messageImage}
+                            onClick={() => openModal(file.item)}
+                          />
+                        ))}
+                      </div>
+                    )}
+                    {voice && (
+                      <div className={styles.voiceContainer}>
+                        <audio controls>
+                          <source src={voice} type="audio/ogg" />
+                                            Ваш браузер не поддерживает элемент audio.
+                        </audio>
+                      </div>
+                    )}
+                    <div className={styles.messageInfo}>
+                      <Typography component="span" className={styles.nicknameTime}>
+                        {sender.first_name} {sender.last_name}, {messageTime}
+                      </Typography>
+                      <div className={styles.messageActions}>
+                        <span className={styles.readStatus}>{readStatus}</span>
+                        <IconButton size="small" onClick={handleEditToggle}>
+                          <Edit fontSize="small" />
+                        </IconButton>
+                        <IconButton size="small" onClick={handleDelete}>
+                          <Delete fontSize="small" />
+                        </IconButton>
+                      </div>
                     </div>
-                    <LazyLoadAvatar
-                        src={sender.avatar}
-                        alt={`${sender.first_name} ${sender.last_name}`}
-                        className={styles.avatar}
-                    >
-                        {!sender.avatar && sender.first_name.charAt(0)}
-                    </LazyLoadAvatar>
-                </>
+                  </>
                 )}
-
-            <Modal
-                isOpen={isModalOpen}
-                onRequestClose={closeModal}
-                contentLabel="Просмотр изображения"
-                className={styles.modal}
-                overlayClassName={styles.overlay}
+            </div>
+            <LazyLoadAvatar
+              src={sender.avatar}
+              alt={`${sender.first_name} ${sender.last_name}`}
+              className={styles.avatar}
             >
-                <button onClick={closeModal} className={styles.closeButton}>×</button>
-                {currentImage && <img src={currentImage} alt="Просмотр" className={styles.fullImage} />}
-            </Modal>
-        </li>
+              {!sender.avatar && sender.first_name.charAt(0)}
+            </LazyLoadAvatar>
+          </>
+        )
+        : (
+          <>
+            <div className={styles.messageContent}>
+              <Typography variant="body1" component="span">
+                {text}
+              </Typography>
+              {files && files.length > 0 && (
+                <div className={styles.imagesContainer}>
+                  {files.map((file, index) => (
+                    <LazyLoadImage
+                      key={index}
+                      src={file.item}
+                      alt={`file-${index}`}
+                      className={styles.messageImage}
+                      onClick={() => openModal(file.item)}
+                    />
+                  ))}
+                </div>
+              )}
+              {voice && (
+                <div className={styles.voiceContainer}>
+                  <audio controls>
+                    <source src={voice} type="audio/ogg" />
+                                    Ваш браузер не поддерживает элемент audio.
+                  </audio>
+                </div>
+              )}
+              <div className={styles.messageInfo}>
+                <Typography component="span" className={styles.nicknameTime}>
+                  {sender.first_name} {sender.last_name}, {messageTime}
+                </Typography>
+              </div>
+            </div>
+            <LazyLoadAvatar
+              src={sender.avatar}
+              alt={`${sender.first_name} ${sender.last_name}`}
+              className={styles.avatar}
+            >
+              {!sender.avatar && sender.first_name.charAt(0)}
+            </LazyLoadAvatar>
+          </>
+        )}
+
+      <Modal
+        isOpen={isModalOpen}
+        onRequestClose={closeModal}
+        contentLabel="Просмотр изображения"
+        className={styles.modal}
+        overlayClassName={styles.overlay}
+      >
+        <button onClick={closeModal} className={styles.closeButton}>×</button>
+        {currentImage && <img src={currentImage} alt="Просмотр" className={styles.fullImage} />}
+      </Modal>
+    </li>
   );
 };
 
