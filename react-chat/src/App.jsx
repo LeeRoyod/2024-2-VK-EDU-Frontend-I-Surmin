@@ -129,17 +129,17 @@ export const App = () => {
   }
 
   return (
-        <>
-            <audio ref={audioRef} src={notificationSound} />
-            <Routes>
-                <Route path="/" element={isAuthenticated ? <ChatList /> : <Navigate to="/login" />} />
-                <Route path="/chat/:chatId" element={isAuthenticated ? <ChatWrapper /> : <Navigate to="/login" />} />
-                <Route path="/profile" element={isAuthenticated ? <Profile /> : <Navigate to="/login" />} />
-                <Route path="/login" element={isAuthenticated ? <Navigate to="/" /> : <Login />} />
-                <Route path="/register" element={isAuthenticated ? <Navigate to="/" /> : <Register />} />
-                <Route path="*" element={<Navigate to="/" />} />
-            </Routes>
-        </>
+    <>
+      <audio ref={audioRef} src={notificationSound} />
+      <Routes>
+        <Route path="/" element={isAuthenticated ? <ChatList /> : <Navigate to="/login" />} />
+        <Route path="/chat/:chatId" element={isAuthenticated ? <ChatWrapper /> : <Navigate to="/login" />} />
+        <Route path="/profile" element={isAuthenticated ? <Profile /> : <Navigate to="/login" />} />
+        <Route path="/login" element={isAuthenticated ? <Navigate to="/" /> : <Login />} />
+        <Route path="/register" element={isAuthenticated ? <Navigate to="/" /> : <Register />} />
+        <Route path="*" element={<Navigate to="/" />} />
+      </Routes>
+    </>
   );
 };
 

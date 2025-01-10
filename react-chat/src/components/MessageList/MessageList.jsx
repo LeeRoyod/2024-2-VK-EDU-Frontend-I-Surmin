@@ -12,21 +12,21 @@ export const MessageList = ({ messages, messageListRef, lastSentMessageId, onDel
     const isNew = message.id === lastSentMessageId;
 
     return (
-            <MessageItem
-                key={message.id}
-                message={message}
-                isMyMessage={isMyMessage}
-                isNew={isNew}
-                onDeleteMessage={onDeleteMessage}
-                onEditMessage={onEditMessage}
-            />
+      <MessageItem
+        key={message.id}
+        message={message}
+        isMyMessage={isMyMessage}
+        isNew={isNew}
+        onDeleteMessage={onDeleteMessage}
+        onEditMessage={onEditMessage}
+      />
     );
   });
 
   return (
-        <ul className={styles.messageList} ref={messageListRef}>
-            {messageItems}
-        </ul>
+    <ul className={styles.messageList} ref={messageListRef}>
+      {messageItems}
+    </ul>
   );
 };
 

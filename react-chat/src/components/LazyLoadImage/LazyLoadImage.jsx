@@ -33,12 +33,12 @@ export const LazyLoadImage = ({ src, alt, ...props }) => {
   }, []);
 
   return (
-        <img
-            ref={imageRef}
-            src={shouldLoad ? src : ''}
-            alt={alt}
-            {...props}
-        />
+    <img
+      ref={imageRef}
+      src={shouldLoad ? src : ''}
+      alt={alt}
+      {...props}
+    />
   );
 };
 

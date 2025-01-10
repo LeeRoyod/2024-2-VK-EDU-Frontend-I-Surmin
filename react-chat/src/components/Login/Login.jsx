@@ -28,43 +28,43 @@ export const Login = () => {
   };
 
   return (
-        <div className={styles.authContainer}>
-            <h1 className={styles.title}>Мессенджер</h1>
-            <h2 className={styles.subtitle}>Вход</h2>
-            <form className={styles.form} onSubmit={handleSubmit}>
-                <TextField
-                    label="Логин"
-                    variant="outlined"
-                    fullWidth
-                    margin="normal"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                />
-                <TextField
-                    label="Пароль"
-                    variant="outlined"
-                    type="password"
-                    fullWidth
-                    margin="normal"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                />
-                <Button
-                    type="submit"
-                    variant="contained"
-                    color="primary"
-                    className={styles.loginButton}
-                >
+    <div className={styles.authContainer}>
+      <h1 className={styles.title}>Мессенджер</h1>
+      <h2 className={styles.subtitle}>Вход</h2>
+      <form className={styles.form} onSubmit={handleSubmit}>
+        <TextField
+          label="Логин"
+          variant="outlined"
+          fullWidth
+          margin="normal"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+        />
+        <TextField
+          label="Пароль"
+          variant="outlined"
+          type="password"
+          fullWidth
+          margin="normal"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
+        <Button
+          type="submit"
+          variant="contained"
+          color="primary"
+          className={styles.loginButton}
+        >
                     Войти
-                </Button>
-                <Button
-                    variant="text"
-                    color="primary"
-                    onClick={handleRegisterRedirect}
-                >
+        </Button>
+        <Button
+          variant="text"
+          color="primary"
+          onClick={handleRegisterRedirect}
+        >
                     Зарегистрироваться
-                </Button>
-            </form>
-        </div>
+        </Button>
+      </form>
+    </div>
   );
 };

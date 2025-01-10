@@ -68,49 +68,49 @@ export const ChatItem = ({ chat, openChat, deleteChat }) => {
       chatName = `${otherUser.first_name} ${otherUser.last_name}`.trim() || otherUser.username;
       chatAvatar = otherUser.avatar;
       onlineIndicator = (
-                <span
-                    className={styles.onlineIndicator}
-                    style={{ backgroundColor: otherUser.is_online ? '#4caf50' : '#999' }}
-                    title={otherUser.is_online ? 'Онлайн' : 'Оффлайн'}
-                ></span>
+        <span
+          className={styles.onlineIndicator}
+          style={{ backgroundColor: otherUser.is_online ? '#4caf50' : '#999' }}
+          title={otherUser.is_online ? 'Онлайн' : 'Оффлайн'}
+        ></span>
       );
     }
   }
 
   return (
-        <li className={styles.chatItem} onClick={handleClick}>
-            <div className={styles.chatAvatar}>
-                <LazyLoadAvatar src={chatAvatar}>
-                    {(!chatAvatar && chatName.charAt(0))}
-                </LazyLoadAvatar>
-            </div>
-            <div className={styles.chatInfo}>
-                <div className={styles.chatName}>
-                    {chatName} {onlineIndicator}
-                </div>
-                <div className={styles.chatLastMessageContainer}>
-                    <div className={styles.chatLastMessage}>{lastMessageText}</div>
-                    <div className={styles.chatLastMessageInfo}>
-                        {isCreator && (
-                            <IconButton
-                                className={styles.deleteButton}
-                                onClick={handleDelete}
-                                aria-label="delete"
-                                size="small"
-                            >
-                                <Delete fontSize="small" />
-                            </IconButton>
-                        )}
-                        {lastMessageTime && (
-                            <span className={styles.messageTime}>{lastMessageTime}</span>
-                        )}
-                        {lastMessageFromUser && (
-                            <span className={styles.messageCheck}>{lastMessageReadStatus}</span>
-                        )}
-                    </div>
-                </div>
-            </div>
-        </li>
+    <li className={styles.chatItem} onClick={handleClick}>
+      <div className={styles.chatAvatar}>
+        <LazyLoadAvatar src={chatAvatar}>
+          {(!chatAvatar && chatName.charAt(0))}
+        </LazyLoadAvatar>
+      </div>
+      <div className={styles.chatInfo}>
+        <div className={styles.chatName}>
+          {chatName} {onlineIndicator}
+        </div>
+        <div className={styles.chatLastMessageContainer}>
+          <div className={styles.chatLastMessage}>{lastMessageText}</div>
+          <div className={styles.chatLastMessageInfo}>
+            {isCreator && (
+              <IconButton
+                className={styles.deleteButton}
+                onClick={handleDelete}
+                aria-label="delete"
+                size="small"
+              >
+                <Delete fontSize="small" />
+              </IconButton>
+            )}
+            {lastMessageTime && (
+              <span className={styles.messageTime}>{lastMessageTime}</span>
+            )}
+            {lastMessageFromUser && (
+              <span className={styles.messageCheck}>{lastMessageReadStatus}</span>
+            )}
+          </div>
+        </div>
+      </div>
+    </li>
   );
 };
 
